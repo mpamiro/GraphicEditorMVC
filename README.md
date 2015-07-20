@@ -1,1 +1,1 @@
-#Editor grafico vettoriale java realizzato applicando il pattern Model/View/Controller
+#Editor WYSIWYG scritto in Java realizzato applicando il pattern Model/View/Controller: permette di creare file binari contenenti figure geometriche colorate, visualizzandoli anche sotto forma di testo.
