@@ -5,7 +5,6 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
 import java.io.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * La classe e' la finestra principale del programma GraphicEditorMVC.
