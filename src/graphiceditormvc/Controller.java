@@ -35,7 +35,6 @@ public class Controller extends javax.swing.JFrame{
     boolean saved, moved;
     Model copia; // Per gestire l'undo del trascinamento
     WndListaView vistaTesto; // Vista testuale del documento
-    JScrollPane scrollPanel;
     
     /**
      * crea una nuova finestra di tipo Controller
@@ -451,38 +450,9 @@ public class Controller extends javax.swing.JFrame{
     private void associaVistaModello(){
         // Creo una nuova vista grafica
         vistaGrafica=new GraphicView(documento);
-        scrollPanel=new JScrollPane(vistaGrafica,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        mainPanel.add(scrollPanel);
+        mainPanel.add(vistaGrafica);
         // Associo alla vista un gestore di eventi
-        vistaGrafica.addMouseListener(new MouseAdapter(){
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if(btn_select.isSelected()) seleziona(e);
-                else if(btn_delete.isSelected()) elimina(e);
-                else inserisci(e);
-                aggiornaViste(); 
-            }
-            @Override
-            public void mousePressed(MouseEvent e){
-                if(vistaGrafica.getSelezionata()!=-1){
-                    copia=new Model(documento);
-                }
-            }
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                if(copia!=null && moved && vistaGrafica.getSelezionata()!=-1){
-                    createUndo("Annulla sposta",copia);
-                    copia=null;
-                    moved=false;
-                }
-            }
-        });
-        vistaGrafica.addMouseMotionListener(new MouseAdapter(){
-            @Override
-            public void mouseDragged(MouseEvent e){
-                sposta(e);
-            }
-        });
+        vistaGrafica.aggiungiAscoltatore(new AscoltaMouse());
         aggiornaViste();
         // Impostazioni per un documento appena aperto
         saved=true;
@@ -518,10 +488,8 @@ public class Controller extends javax.swing.JFrame{
           // Rimuovo il nome del file dal titolo
           setTitle("Drawing");
           // Elimino le viste
-          scrollPanel.remove(vistaGrafica);
+          mainPanel.remove(vistaGrafica);
           vistaGrafica=null;
-          mainPanel.remove(scrollPanel);
-          scrollPanel=null;
           if(vistaTesto!=null && vistaTesto.isShowing()){
               vistaTesto.chiudi();
               vistaTesto=null;
@@ -638,5 +606,35 @@ public class Controller extends javax.swing.JFrame{
     private void aggiornaViste(){
         vistaGrafica.repaint();
         if (vistaTesto!=null && vistaTesto.isShowing()) vistaTesto.aggiorna();
+    }
+
+
+    class AscoltaMouse extends MouseAdapter{
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(btn_select.isSelected()) seleziona(e);
+                else if(btn_delete.isSelected()) elimina(e);
+                else inserisci(e);
+                aggiornaViste(); 
+            }
+            @Override
+            public void mousePressed(MouseEvent e){
+                if(vistaGrafica.getSelezionata()!=-1){
+                    copia=new Model(documento);
+                }
+            }
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                if(copia!=null && moved && vistaGrafica.getSelezionata()!=-1){
+                    createUndo("Annulla sposta",copia);
+                    copia=null;
+                    moved=false;
+                }
+            }
+            @Override
+            public void mouseDragged(MouseEvent e){
+                sposta(e);
+            }
     }
 }

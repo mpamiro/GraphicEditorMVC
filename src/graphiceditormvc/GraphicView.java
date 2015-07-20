@@ -2,14 +2,16 @@ package graphiceditormvc;
 
 import javax.swing.*;
 import java.awt.*;
+
 /**
  * Un pannello che rappresenta una vista in grafica vettoriale per i documenti di tipo Model.
  * 
  * @author mauropamiro
  */
-public class GraphicView extends JPanel{
+public class GraphicView extends JScrollPane{
     private Model documento;
     private int selezionata;
+    private ViewPanel pannello;
 
     /**
      * Associa alla vista un documento di tipo Model
@@ -55,9 +57,43 @@ public class GraphicView extends JPanel{
      * @param documento il documento di tipo Model da associare alla vista
      */
     public GraphicView(Model documento){
+        super(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         setDocumento(documento);
+        pannello=new ViewPanel(this);
+        pannello.setPreferredSize(new Dimension(documento.getWidth(),documento.getHeight()));
+        setViewportView(pannello);
+    }
+    
+    public void disegna(Graphics2D g){
+        g.setColor(Color.white);
+        g.fillRect(0, 0, pannello.getWidth(), pannello.getHeight());
+        for(int i=0;i<documento.nForme();i++){
+            documento.getForma(i).disegna(g);
+        }
+        g.setColor(Color.GRAY);
+        g.fillRect(documento.getWidth(), 0, pannello.getWidth()-documento.getWidth(), pannello.getHeight());
+        g.fillRect(0, documento.getHeight(), pannello.getWidth(), pannello.getHeight()-documento.getHeight());
+    }
+
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        pannello.repaint();
+    }
+
+    void aggiungiAscoltatore(Controller.AscoltaMouse ascoltaVista) {
+        pannello.addMouseListener(ascoltaVista);
+        pannello.addMouseMotionListener(ascoltaVista);
+    } 
+}
+
+
+class ViewPanel extends JPanel{
+    GraphicView parent;
+    
+    ViewPanel(GraphicView parent){
+        this.parent=parent;
         setBackground(Color.white);
-        setPreferredSize(new Dimension(documento.getWidth(), documento.getHeight()));
     }
     
     /**
@@ -68,12 +104,6 @@ public class GraphicView extends JPanel{
      */
     @Override
     public void paintComponent(Graphics g){
-        super.paintComponent(g);
-        for(int i=0;i<documento.nForme();i++){
-            documento.getForma(i).disegna((Graphics2D)g);
-        }
-        g.setColor(Color.GRAY);
-        g.fillRect(documento.getWidth(), 0, this.getWidth()-documento.getWidth(), this.getHeight());
-        g.fillRect(0, documento.getHeight(), this.getWidth(), this.getHeight()-documento.getHeight());
-    }
+        parent.disegna((Graphics2D)g);
+    }    
 }
