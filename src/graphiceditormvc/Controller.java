@@ -641,26 +641,3 @@ public class Controller extends javax.swing.JFrame{
         if (vistaTesto!=null && vistaTesto.isShowing()) vistaTesto.aggiorna();
     }
 }
-
-/**
- * Rappresenta un elemento della lista degli annullamenti (menu Modifica->Annulla).
- * Ogni elemento della lista di annullamenti e' composto dal documento così come era 
- * prima della modifica da annullare e dalla descrizione dell'operazione da annullare.
- * 
- * @author mauropamiro
- */
-class UndoItem{
-    String description;
-    Model documento;
-
-    /**
-     * Cre un elemento della lista degli annullamenti.
-     * 
-     * @param description   descrizione dell'operazione da annullare
-     * @param documento     il documento così come era prima della modifica da annullare
-     */
-    public UndoItem(String description, Model documento) {
-        this.description = description;
-        this.documento = documento;
-    }
-}
