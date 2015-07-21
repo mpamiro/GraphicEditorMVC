@@ -39,7 +39,6 @@ public class WndListaView extends java.awt.Dialog {
      */
     public void chiudi(){
         setVisible(false);
-        dispose();
     }
     
     /**
@@ -48,6 +47,7 @@ public class WndListaView extends java.awt.Dialog {
     public void aggiorna(){
         if(documento!=null){
             txtArea.setText(documento.toString());
+            repaint();
         }
     }
     
@@ -65,8 +65,7 @@ public class WndListaView extends java.awt.Dialog {
 
         setLocationRelativeTo(null);
         setMinimumSize(new java.awt.Dimension(600, 500));
-        setPreferredSize(new java.awt.Dimension(600, 500));
-        setSize(new java.awt.Dimension(600, 500));
+        setResizable(false);
         setTitle("Elenco Forme");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {

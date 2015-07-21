@@ -300,7 +300,7 @@ public class Controller extends javax.swing.JFrame{
             // Sostituisco il documento con quello memorizzato nella lista di Undo
             documento=undoList.get(0).documento;
             vistaGrafica.setDocumento(documento);
-            if(vistaTesto!=null && vistaTesto.isShowing()) vistaTesto.setDocumento(documento);
+            if(vistaTesto!=null) vistaTesto.setDocumento(documento);
             saved=false;
             // Elimino l'ultimo elemento inserito nella lista di undo
             undoList.remove(0);
@@ -371,12 +371,10 @@ public class Controller extends javax.swing.JFrame{
 
     private void menuListaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuListaActionPerformed
         if(documento!=null){
-            if(vistaTesto==null){
-                vistaTesto=new WndListaView(this,false,documento);
-                vistaTesto.setVisible(true);
-            }
-            else if(vistaTesto.isShowing()) vistaTesto.requestFocus();
-            else vistaTesto.setVisible(true);
+            if(vistaTesto==null) vistaTesto=new WndListaView(this,false,documento);
+            vistaTesto.setVisible(true);
+            vistaTesto.requestFocus();
+            vistaTesto.aggiorna();
         }
     }//GEN-LAST:event_menuListaActionPerformed
 
@@ -451,6 +449,7 @@ public class Controller extends javax.swing.JFrame{
         // Creo una nuova vista grafica
         vistaGrafica=new GraphicView(documento);
         mainPanel.add(vistaGrafica);
+        vistaTesto=null;
         // Associo alla vista un gestore di eventi
         vistaGrafica.aggiungiAscoltatore(new AscoltaMouse());
         aggiornaViste();
@@ -490,7 +489,7 @@ public class Controller extends javax.swing.JFrame{
           // Elimino le viste
           mainPanel.remove(vistaGrafica);
           vistaGrafica=null;
-          if(vistaTesto!=null && vistaTesto.isShowing()){
+          if(vistaTesto!=null){
               vistaTesto.chiudi();
               vistaTesto=null;
           }
@@ -605,7 +604,7 @@ public class Controller extends javax.swing.JFrame{
     
     private void aggiornaViste(){
         vistaGrafica.repaint();
-        if (vistaTesto!=null && vistaTesto.isShowing()) vistaTesto.aggiorna();
+        if (vistaTesto!=null) vistaTesto.aggiorna();
     }
 
 
