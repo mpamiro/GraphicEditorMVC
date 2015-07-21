@@ -34,7 +34,8 @@ public class Controller extends javax.swing.JFrame{
     File file;
     boolean saved, moved;
     Model copia; // Per gestire l'undo del trascinamento
-    WndListaView vistaTesto; // Vista testuale del documento
+    WndVistaView vistaTesto; // Vista testuale del documento
+    int selezionata; // Indice della forma selezionata nel documento
     
     /**
      * crea una nuova finestra di tipo Controller
@@ -299,8 +300,6 @@ public class Controller extends javax.swing.JFrame{
         if(undoList.size()>0){
             // Sostituisco il documento con quello memorizzato nella lista di Undo
             documento=undoList.get(0).documento;
-            vistaGrafica.setDocumento(documento);
-            if(vistaTesto!=null) vistaTesto.setDocumento(documento);
             saved=false;
             // Elimino l'ultimo elemento inserito nella lista di undo
             undoList.remove(0);
@@ -371,7 +370,7 @@ public class Controller extends javax.swing.JFrame{
 
     private void menuListaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuListaActionPerformed
         if(documento!=null){
-            if(vistaTesto==null) vistaTesto=new WndListaView(this,false,documento);
+            if(vistaTesto==null) vistaTesto=new WndVistaView(this);
             vistaTesto.setVisible(true);
             vistaTesto.requestFocus();
             vistaTesto.aggiorna();
@@ -447,14 +446,14 @@ public class Controller extends javax.swing.JFrame{
     
     private void associaVistaModello(){
         // Creo una nuova vista grafica
-        vistaGrafica=new GraphicView(documento);
+        vistaGrafica=new GraphicView(this,new Dimension(documento.getWidth(),documento.getHeight()));
         mainPanel.add(vistaGrafica);
-        vistaTesto=null;
         // Associo alla vista un gestore di eventi
         vistaGrafica.aggiungiAscoltatore(new AscoltaMouse());
         aggiornaViste();
         // Impostazioni per un documento appena aperto
         saved=true;
+        selezionata=-1;
         undoList=new ArrayList<>();
         menuSave.setEnabled(true);
         menuSaveAs.setEnabled(true);
@@ -490,13 +489,14 @@ public class Controller extends javax.swing.JFrame{
           mainPanel.remove(vistaGrafica);
           vistaGrafica=null;
           if(vistaTesto!=null){
-              vistaTesto.chiudi();
+              vistaTesto.setVisible(false);
               vistaTesto=null;
           }
           // Elimino il documento
           documento=null;
           file=null;
           saved=false;
+          selezionata=-1;
           mainPanel.repaint();
           setStatus("Chiuso documento");
         }
@@ -514,7 +514,7 @@ public class Controller extends javax.swing.JFrame{
         if(seleziona(e)!=-1){
             createUndo("Annulla elimina");
             // Elimino la forma selezionata
-            documento.elimina(vistaGrafica.getSelezionata());
+            documento.elimina(getSelezionata());
             saved=false;
             aggiornaViste();
             setStatus("Eliminata forma");
@@ -525,7 +525,7 @@ public class Controller extends javax.swing.JFrame{
         // Seleziono la forma alla posizione del mouse
         Point posizione=e.getPoint();
         int selezionata=-1;
-        selezionata=vistaGrafica.seleziona(posizione.x, posizione.y);
+        selezionata=seleziona(posizione.x, posizione.y);
         setStatus("Selezionata forma "+selezionata);
         return selezionata;
     }
@@ -548,12 +548,12 @@ public class Controller extends javax.swing.JFrame{
     
     private void sposta(MouseEvent e){
         Point posizione=e.getPoint();
-        if(vistaGrafica.getSelezionata()!=-1){
-            documento.getForma(vistaGrafica.getSelezionata()).sposta(posizione.x, posizione.y);
+        if(getSelezionata()!=-1){
+            documento.getForma(getSelezionata()).sposta(posizione.x, posizione.y);
             saved=false;
             moved=true;
             aggiornaViste();
-            setStatus("Spostata forma "+ vistaGrafica.getSelezionata());
+            setStatus("Spostata forma "+ getSelezionata());
         }
     }
     
@@ -603,10 +603,47 @@ public class Controller extends javax.swing.JFrame{
     }
     
     private void aggiornaViste(){
-        vistaGrafica.repaint();
+        this.aggiornaVistaGrafica(null);
         if (vistaTesto!=null) vistaTesto.aggiorna();
     }
 
+    public void aggiornaVistaGrafica(Graphics2D g){
+        if(g==null) g=vistaGrafica.getViewGraphics();
+        documento.disegna(g, vistaGrafica.getViewSize());   
+    }
+
+    /**
+     * Restituisce l'indice della forma selezionata o -1 se non e' selezionata nessuna forma.
+     *
+     * @return l'indice della forma selezionata o -1 se non e' selezionata nessuna forma
+     */
+    public int getSelezionata() {
+        return selezionata;
+    }
+
+    /**
+     * Seleziona la forma in primo piano alle coordinate x,y
+     *
+     * @param x la coordinata x del punto da controllare
+     * @param y la coordinata y del punto da controllare
+     *
+     * @return  l'indice, all'interno del documento di tipo Model, della forma selezionata o -1 se nel punto (x,y) non e' presente alcuna forma
+     */
+    public int seleziona(int x, int y) {
+        selezionata = -1;
+        for (int i = documento.nForme() - 1; i >= 0; i--) {
+            if (documento.getForma(i).contiene(x, y)) {
+                selezionata = i;
+                break;
+            }
+        }
+        return selezionata;
+    }
+
+    public String getTestoDocumento() {
+        if(documento!=null) return documento.toString();
+        else return "";
+    }
 
     class AscoltaMouse extends MouseAdapter{
 
@@ -619,13 +656,13 @@ public class Controller extends javax.swing.JFrame{
             }
             @Override
             public void mousePressed(MouseEvent e){
-                if(vistaGrafica.getSelezionata()!=-1){
+                if(getSelezionata()!=-1){
                     copia=new Model(documento);
                 }
             }
             @Override
             public void mouseReleased(MouseEvent e) {
-                if(copia!=null && moved && vistaGrafica.getSelezionata()!=-1){
+                if(copia!=null && moved && getSelezionata()!=-1){
                     createUndo("Annulla sposta",copia);
                     copia=null;
                     moved=false;

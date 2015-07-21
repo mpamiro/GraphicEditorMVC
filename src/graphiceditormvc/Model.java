@@ -1,5 +1,8 @@
 package graphiceditormvc;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
 import java.util.*;
 import java.io.Serializable;
 
@@ -131,5 +134,16 @@ public class Model implements Serializable{
             descrizione+=i+": "+forme.get(i).toString()+"\n";
         }
         return descrizione;
+    }
+    
+    public void disegna(Graphics2D g, Dimension viewSize){
+        g.setColor(Color.white);
+        g.fillRect(0, 0, viewSize.width, viewSize.height);
+        for(int i=0;i<nForme();i++){
+            getForma(i).disegna(g);
+        }
+        g.setColor(Color.GRAY);
+        g.fillRect(getWidth(), 0, viewSize.width-getWidth(), viewSize.height);
+        g.fillRect(0, getHeight(), viewSize.width, viewSize.height-getHeight());        
     }
 }
