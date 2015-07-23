@@ -38,7 +38,7 @@ public class GraphicView extends JScrollPane{
      * 
      * @param g il contesto grafico del pannello in cui disegnare la vista
      */
-    public void disegna(Graphics2D g){
+    public void aggiorna(Graphics2D g){
         controller.aggiornaVistaGrafica(g);
         repaint();
     }
@@ -106,6 +106,6 @@ class ViewPanel extends JPanel{
      */
     @Override
     public void paintComponent(Graphics g){
-        parent.disegna((Graphics2D)g);
+        parent.aggiorna((Graphics2D)g);
     }    
 }
