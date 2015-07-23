@@ -2,22 +2,18 @@ package graphiceditormvc;
 
 import java.awt.Point;
 
-
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 /**
- *
+ * Una finestra di dialogo in cui viene visualizzata una rappresentazione testuale del documento
+ * 
  * @author mauropamiro
  */
 public class WndVistaView extends javax.swing.JDialog {
     Controller controller;
     
     /**
-     * Creates new form WndVistaView
+     * Costruttore: crea la finestra e memorizza un riferimento al Controller (la finestra principale)
+     * 
+     * @param cotroller il Controller associato alla vista (la finestra principale)
      */
     public WndVistaView(Controller controller) {
         super(controller, false);
@@ -27,7 +23,7 @@ public class WndVistaView extends javax.swing.JDialog {
     }
     
      /**
-     * Aggiorna la vista del documento
+     * Aggiorna la vista del documento, modificando il contenuto dell'area di testo
      */
     public void aggiorna(){
         txtArea.setText(controller.getTestoDocumento());

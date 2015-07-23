@@ -12,7 +12,7 @@ import java.io.*;
  * Il programma implementa il pattern Model/View/Controller:
  * il Controller (interfaccia utente) modifica il Model (documento), 
  * notificando le View (rappresentazione grafica o testuale del documento) delle avvenute modifiche.
- * Ad ogni modifica le View si aggiornano leggendo il documento.
+ * Ad ogni modifica le View si aggiornano.
  * <p>
  * Classi principali utilizzate dal programma:
  * <ul>
@@ -21,7 +21,6 @@ import java.io.*;
  * <li>Forma: la singola forma geometrica inclusa nel documento di tipo Model.
  * <li>GraphicView: un pannello che fornisce una vista in grafica vettoriale del documento di tipo Model.
  * <li>WndListaView: una finestra di dialogo che fornisce una vista testuale del documento di tipo Model.
- * <li>SizeDialog: una finestra di dialogo per la scelta delle dimensioni di un nuovo documento.
  * </ul>
  * <p>
  * Il tipo di possibili forme e' descritto dall'enumerazione TipoForma.
@@ -29,13 +28,18 @@ import java.io.*;
 public class Controller extends javax.swing.JFrame{
 
     Model documento;
-    GraphicView vistaGrafica;
-    ArrayList<UndoItem> undoList;
-    File file;
-    boolean saved, moved;
-    Model copia; // Per gestire l'undo del trascinamento
-    WndVistaView vistaTesto; // Vista testuale del documento
+    File file; // File in cui è salvato il documento
+    boolean saved; // Indica se il documento è stato salvato dopo l'ultima modifica 
+    
+    GraphicView vistaGrafica; // Pannello scorrevole con una vista grafica del documento
+    WndVistaView vistaTesto; // Finestra di dialogo con una vista testuale del documento
+    
     int selezionata; // Indice della forma selezionata nel documento
+    
+    ArrayList<UndoItem> undoList; // Lista dei documenti per gli annullamenti
+    boolean moved; // Indica se la forma selezionata è stata appena spostata
+    Model copia; // Per gestire l'undo del trascinamento
+    
     
     /**
      * crea una nuova finestra di tipo Controller
@@ -337,7 +341,7 @@ public class Controller extends javax.swing.JFrame{
                 ObjectInputStream in = new ObjectInputStream(fileIn);
                 // Leggo il documento dal file e lo associo alla vista
                 documento=(Model)in.readObject();
-                associaVistaModello();
+                associaVista();
                 // Chiudo il file
                 in.close();
                 fileIn.close();
@@ -359,7 +363,7 @@ public class Controller extends javax.swing.JFrame{
         if(d!=null){
             // Creo un nuovo documento, associandolo alla vista
             documento=new Model(d.width,d.height);
-            associaVistaModello();
+            associaVista();
             setStatus("New "+documento.getWidth()+"x"+documento.getHeight()+" px document.");
         }
     }//GEN-LAST:event_menuNewActionPerformed
@@ -444,7 +448,7 @@ public class Controller extends javax.swing.JFrame{
     private javax.swing.ButtonGroup tools_group;
     // End of variables declaration//GEN-END:variables
     
-    private void associaVistaModello(){
+    private void associaVista(){
         // Creo una nuova vista grafica
         vistaGrafica=new GraphicView(this,new Dimension(documento.getWidth(),documento.getHeight()));
         mainPanel.add(vistaGrafica);
@@ -463,6 +467,7 @@ public class Controller extends javax.swing.JFrame{
     
     private void chiudi(){
         if(documento!=null){  
+          // Controllo se ci sono modifiche da salvare
           if(!saved){
               // Chiedo se si desidere salvare le modifiche
               int risposta=JOptionPane.showConfirmDialog(this, "Vuoi salvare le modifiche prima di chiudere il file?","Salvataggio richiesto", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
@@ -483,7 +488,7 @@ public class Controller extends javax.swing.JFrame{
           menuSaveAs.setEnabled(false);
           menuClose.setEnabled(false);
           menuLista.setEnabled(false);
-          // Rimuovo il nome del file dal titolo
+          // Rimuovo il nome del file dalla barra del titolo della finestra
           setTitle("Drawing");
           // Elimino le viste
           mainPanel.remove(vistaGrafica);
@@ -510,7 +515,9 @@ public class Controller extends javax.swing.JFrame{
         return this.lbl_status.getText();
     }
     
+    // Elimina la forma alla posizione del mouse
     private void elimina(MouseEvent e){
+        // Se c'è una forma alla posizione del mouse la seleziono
         if(seleziona(e)!=-1){
             createUndo("Annulla elimina");
             // Elimino la forma selezionata
@@ -521,105 +528,18 @@ public class Controller extends javax.swing.JFrame{
         }
     }
     
+    // Seleziona la forma alla posizione del mouse
     private int seleziona(MouseEvent e){
-        // Seleziono la forma alla posizione del mouse
+        // Ottengo le coordinate del mouse
         Point posizione=e.getPoint();
+        // Deseleziono l'eventuale forma selezionata
         int selezionata=-1;
+        // Seleziono la forma alla posizione del mouse
         selezionata=seleziona(posizione.x, posizione.y);
         setStatus("Selezionata forma "+selezionata);
         return selezionata;
     }
     
-    private void inserisci(MouseEvent e){
-        createUndo("Annulla inserisci");
-        TipoForma tipo;
-        Point posizione=e.getPoint();
-        // Il tipo di forma dipende dallo strumento selezionato
-        if(btn_square.isSelected()) tipo=TipoForma.QUADRATO;
-        else if(btn_circle.isSelected()) tipo=TipoForma.CERCHIO;
-        else tipo=TipoForma.TRIANGOLO;
-        // Creo la forma e la aggiungo al documento
-        Forma f=new Forma(tipo,posizione.x,posizione.y,50,50,btnColor.getBackground());
-        documento.add(f);        
-        saved=false;
-        aggiornaViste();
-        setStatus("Inserito "+f.getTipo());
-    }
-    
-    private void sposta(MouseEvent e){
-        Point posizione=e.getPoint();
-        if(getSelezionata()!=-1){
-            documento.getForma(getSelezionata()).sposta(posizione.x, posizione.y);
-            saved=false;
-            moved=true;
-            aggiornaViste();
-            setStatus("Spostata forma "+ getSelezionata());
-        }
-    }
-    
-    private void createUndo(String description){
-        Model copia=new Model(documento);
-        createUndo(description,copia);
-    }
-    
-    private void createUndo(String description, Model copia){
-        undoList.add(0,new UndoItem(description,copia));
-        if(undoList.size()>10) undoList.remove(10);
-        if(undoList.size()==1) menuUndo.setEnabled(true);
-        menuUndo.setText(description);
-    }
-    
-    private void salvaConNome(){
-        if(documento!=null){
-            JFileChooser fc=new JFileChooser(System.getProperty("user.dir"));
-            int returnVal=fc.showSaveDialog(this);
-            if(returnVal==JFileChooser.APPROVE_OPTION){
-              file = fc.getSelectedFile();
-              salva();
-              setTitle(getTitle() + " - " + file.getName());
-            }
-        }
-    }
-    
-    private void salva(){
-        if(documento!=null && !saved){
-            if(file==null) salvaConNome();
-            else{
-              try
-              {
-                 FileOutputStream fileOut =new FileOutputStream(file.getName());
-                 ObjectOutputStream out = new ObjectOutputStream(fileOut);
-                 out.writeObject(documento);
-                 out.close();
-                 fileOut.close();
-                 setStatus("Salvato in " + file.getName());
-                 saved=true;
-              }catch(IOException i){
-                  setStatus("Errore durante il salvataggio");
-                  file=null;
-              }                
-            }
-        }
-    }
-    
-    private void aggiornaViste(){
-        this.aggiornaVistaGrafica(null);
-        if (vistaTesto!=null) vistaTesto.aggiorna();
-    }
-
-    public void aggiornaVistaGrafica(Graphics2D g){
-        if(g==null) g=vistaGrafica.getViewGraphics();
-        documento.disegna(g, vistaGrafica.getViewSize());   
-    }
-
-    /**
-     * Restituisce l'indice della forma selezionata o -1 se non e' selezionata nessuna forma.
-     *
-     * @return l'indice della forma selezionata o -1 se non e' selezionata nessuna forma
-     */
-    public int getSelezionata() {
-        return selezionata;
-    }
 
     /**
      * Seleziona la forma in primo piano alle coordinate x,y
@@ -638,15 +558,141 @@ public class Controller extends javax.swing.JFrame{
             }
         }
         return selezionata;
+    }    
+
+    /**
+     * Restituisce l'indice della forma selezionata o -1 se non e' selezionata nessuna forma.
+     *
+     * @return l'indice della forma selezionata o -1 se non e' selezionata nessuna forma
+     */
+    public int getSelezionata() {
+        return selezionata;
+    }    
+    
+    /*
+     * Inserisce una forma alla posizione del mouse.
+     * Il tipo di forma inserita dipende dallo strumento selezionato.
+     */
+    private void inserisci(MouseEvent e){
+        createUndo("Annulla inserisci");
+        TipoForma tipo;
+        // Ottengo le coordinate del mouse
+        Point posizione=e.getPoint();
+        // Il tipo di forma dipende dallo strumento selezionato
+        if(btn_square.isSelected()) tipo=TipoForma.QUADRATO;
+        else if(btn_circle.isSelected()) tipo=TipoForma.CERCHIO;
+        else tipo=TipoForma.TRIANGOLO;
+        // Creo la forma e la aggiungo al documento
+        Forma f=new Forma(tipo,posizione.x,posizione.y,50,50,btnColor.getBackground());
+        documento.add(f);        
+        saved=false;
+        aggiornaViste();
+        setStatus("Inserito "+f.getTipo());
+    }
+    
+    // Sposta la forma selezionata alle coordinate del mouse
+    private void sposta(MouseEvent e){
+        // Ottengo le coordinate del mouse
+        Point posizione=e.getPoint();
+        // Se c'è una forma selezionata la sposto
+        if(getSelezionata()!=-1){
+            documento.getForma(getSelezionata()).sposta(posizione.x, posizione.y);
+            saved=false;
+            moved=true;
+            aggiornaViste();
+            setStatus("Spostata forma "+ getSelezionata());
+        }
+    }
+    
+    // Crea una voce di undo, salvando la versione corrente del documento
+    private void createUndo(String description){
+        Model copia=new Model(documento);
+        createUndo(description,copia);
+    }
+    
+    // Aggiunge una voce di undo all'elenco degli annullamenti
+    private void createUndo(String description, Model copia){
+        undoList.add(0,new UndoItem(description,copia));
+        if(undoList.size()>10) undoList.remove(10);
+        if(undoList.size()==1) menuUndo.setEnabled(true);
+        menuUndo.setText(description);
+    }
+    
+    // Salva il documento in un nuovo file
+    private void salvaConNome(){
+        if(documento!=null){
+            // Scelgo nome e percorso del file
+            JFileChooser fc=new JFileChooser(System.getProperty("user.dir"));
+            int returnVal=fc.showSaveDialog(this);
+            if(returnVal==JFileChooser.APPROVE_OPTION){
+              // Associo il nuovo file al documento
+              file = fc.getSelectedFile();
+              // Salvo il documento nel file appena creato
+              salva();
+              // Aggiungo il nome del file alla barra del titolo del programma
+              setTitle(getTitle() + " - " + file.getName());
+            }
+        }
+    }
+    
+    // Salvo il documento nel file ad esso associato
+    private void salva(){
+        if(documento!=null && !saved){
+            // Se non c'è nessun documento associato eseguo "Salva con nome"
+            if(file==null) salvaConNome();
+            else{
+              try
+              {
+                 // Scrivo il documento nel file (grazie all'interfaccia Serializable l'operazione è banale)
+                 FileOutputStream fileOut =new FileOutputStream(file.getName());
+                 ObjectOutputStream out = new ObjectOutputStream(fileOut);
+                 out.writeObject(documento);
+                 out.close();
+                 fileOut.close();
+                 setStatus("Salvato in " + file.getName());
+                 saved=true;
+              }catch(IOException i){
+                  setStatus("Errore durante il salvataggio");
+                  file=null;
+              }                
+            }
+        }
+    }
+    
+    private void aggiornaViste(){
+        aggiornaVistaGrafica(null);
+        if (vistaTesto!=null) vistaTesto.aggiorna();
     }
 
+    public void aggiornaVistaGrafica(Graphics2D g){
+        if(g==null) g=vistaGrafica.getViewGraphics();
+        documento.disegna(g, vistaGrafica.getViewSize());   
+    }
+
+    /**
+     * Restituisce una rappresentazione testuale del documento.
+     * 
+     * @return una rappresentazione testuale del documento
+     */
     public String getTestoDocumento() {
         if(documento!=null) return documento.toString();
         else return "";
     }
 
+    // Una classe interna per gentire gli eventi generati dal mouse all'interno della vista
     class AscoltaMouse extends MouseAdapter{
 
+            /**
+             * Gestione del click del mouse sulla vista.
+             * A seconda dello strumento selezionato è possibile:
+             * <ul>
+             * <li>selezionare una forma</li>
+             * <li>eliminare una forma</li>
+             * <li>inserire una nuova forma</li>
+             * </ul>
+             * 
+             * @param e l'evento generato dal click del mouse
+             */
             @Override
             public void mouseClicked(MouseEvent e) {
                 if(btn_select.isSelected()) seleziona(e);
@@ -654,12 +700,27 @@ public class Controller extends javax.swing.JFrame{
                 else inserisci(e);
                 aggiornaViste(); 
             }
+            
+            /**
+             * Cliccando su una forma, ne viene fatta una copia:
+             * se la forma selezionata verrà spostata, 
+             * la copia verrà inserita nella lista degli annullamenti.
+             * 
+             * @param e l'evento generato dalla pressione del tasto sinistro del mouse
+             */
             @Override
             public void mousePressed(MouseEvent e){
                 if(getSelezionata()!=-1){
                     copia=new Model(documento);
                 }
             }
+            
+            /**
+             * Al rilascio del tasto destro del mouse, se la forma selezionata è stata spostata,
+             * la copia del documento fatta in precedenza viene inserita nella lista degli annullamenti.
+             * 
+             * @param e l'evento generato dal rilascio del tasto sinistro del mouse
+             */            
             @Override
             public void mouseReleased(MouseEvent e) {
                 if(copia!=null && moved && getSelezionata()!=-1){
@@ -668,6 +729,12 @@ public class Controller extends javax.swing.JFrame{
                     moved=false;
                 }
             }
+            
+            /**
+             * Trascinando la forma selezionata è possibile spostarla all'interno del documento
+             * 
+             * @param e l'evento generato dal trascinamento del mouse
+             */
             @Override
             public void mouseDragged(MouseEvent e){
                 sposta(e);

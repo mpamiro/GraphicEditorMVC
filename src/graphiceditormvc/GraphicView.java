@@ -7,7 +7,10 @@ import java.awt.*;
 
 
 /**
- * Un pannello che rappresenta una vista in grafica vettoriale per i documenti di tipo Model.
+ * Un pannello scorrevole (cioè con con barra di scorrimento orizzontale e verticale)
+ * dove disegnare una vista in grafica vettoriale per i documenti di tipo Model.
+ * La vista del documento viene disegnata in un pannello interno,
+ * aggiunto al pannello scorrevole dal costruttore.
  * 
  * @author mauropamiro
  */
@@ -16,9 +19,11 @@ public class GraphicView extends JScrollPane{
     private ViewPanel pannello;
     
     /**
-     * Costruttore che associa alla vista un documento di tipo Model
+     * Costruttore che crea il pannello scorrevole, aggiungendogli un secondo pannello
+     * interno in cui verrà disegnata la vista del documento.
      * 
-     * @param documento il documento di tipo Model da associare alla vista
+     * @param controller la finestra (Controller) a cui viene aggiunto il pannello scorrevole
+     * @param dimensioni le dimensioni del documento da visualizzare
      */
     public GraphicView(Controller controller, Dimension dimensioni){
         super(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -27,11 +32,24 @@ public class GraphicView extends JScrollPane{
         setViewportView(pannello);
     }
     
+    /**
+     * Chiama il metodo aggiornaVistaGrafica del controller, passandogli il contest grafico
+     * del pannello il cui disegnare la vista del documento
+     * 
+     * @param g il contesto grafico del pannello in cui disegnare la vista
+     */
     public void disegna(Graphics2D g){
         controller.aggiornaVistaGrafica(g);
         repaint();
     }
     
+    /**
+     * Restituisce le dimensioni del pannello interno.
+     * Il pannello interno non può essere più piccolo del pannello scorrevole 
+     * e non può essere più grande del documento.
+     * 
+     * @return le dimensioni del pannello interno
+     */
     public Dimension getViewSize(){
         return pannello.getSize();
     }
@@ -42,15 +60,34 @@ public class GraphicView extends JScrollPane{
         pannello.repaint();
     }
 
-    void aggiungiAscoltatore(Controller.AscoltaMouse ascoltaVista) {
+    /**
+     * Associa al pannello interno un ascoltatore (listener) per gli eventi generati dal mouse
+     * 
+     * @param ascoltaVista un ascoltatore (listener) per gli eventi generati dal mouse
+     */
+    public void aggiungiAscoltatore(Controller.AscoltaMouse ascoltaVista) {
         pannello.addMouseListener(ascoltaVista);
         pannello.addMouseMotionListener(ascoltaVista);
     }
 
-    Graphics2D getViewGraphics() {
+    /**
+     * Restituisce il contesto grafico del pannello interno.
+     * Il contesto grafico restituito può essere usato dal Controller per disegnare
+     * la vista del documento.
+     * 
+     * @return il contesto grafico del pannello interno
+     */
+    public Graphics2D getViewGraphics() {
         return (Graphics2D)pannello.getGraphics();
     }
 }
+
+/**
+ * Il pannello interno in cui disegnare la vista del documento.
+ * Viene creato e aggiunto alla GraphicView dal costruttore di GraphicView.
+ * 
+ * @author mauropamiro
+ */
 class ViewPanel extends JPanel{
     GraphicView parent;
     
@@ -63,8 +100,9 @@ class ViewPanel extends JPanel{
     /**
      * Aggiorna la vista ridisegnando il documento.
      * Questo metodo viene chiamato automaticamente ogni volta che il componente deve essere ridisegnato.
+     * Chiama il metodo disegna del Controller.
      * 
-     * @param g il gestore grafico del componente in cui disegnare il documento
+     * @param g il contesto grafico del componente
      */
     @Override
     public void paintComponent(Graphics g){

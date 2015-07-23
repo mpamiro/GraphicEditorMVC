@@ -10,6 +10,9 @@ public class SizeDialog extends javax.swing.JDialog {
     Dimension d;
     /**
      * Crea la finestra SizeDialog
+     * 
+     * @param parent la finestra principale
+     * @param modal true se la finestra è modale, false altrimenti
      */
     public SizeDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -78,6 +81,7 @@ public class SizeDialog extends javax.swing.JDialog {
 
     private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
         try{
+            // Assegna all'attributo d la dimensione inserita nelle caselle di testo
             d=new Dimension(Integer.parseInt(txtWidth.getText()),Integer.parseInt(txtHeight.getText()));
             chiudi();
         }catch(NumberFormatException e){
