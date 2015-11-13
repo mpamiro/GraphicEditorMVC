@@ -25,8 +25,8 @@ public class WndVistaView extends javax.swing.JDialog {
      /**
      * Aggiorna la vista del documento, modificando il contenuto dell'area di testo
      */
-    public void aggiorna(){
-        txtArea.setText(controller.getTestoDocumento());
+    public void aggiorna(String testo){
+        txtArea.setText(testo);
         repaint();
     }
 
@@ -76,7 +76,7 @@ public class WndVistaView extends javax.swing.JDialog {
     }//GEN-LAST:event_btnChiudiActionPerformed
 
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        aggiorna();
+        aggiorna(controller.getTestoDocumento());
     }//GEN-LAST:event_formWindowOpened
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

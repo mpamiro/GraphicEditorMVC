@@ -435,7 +435,7 @@ public class Controller extends javax.swing.JFrame{
             if(vistaTesto==null) vistaTesto=new WndVistaView(this);
             vistaTesto.setVisible(true);
             vistaTesto.requestFocus();
-            vistaTesto.aggiorna();
+            vistaTesto.aggiorna(getTestoDocumento());
         }
     }//GEN-LAST:event_menuListaActionPerformed
 
@@ -485,7 +485,9 @@ public class Controller extends javax.swing.JFrame{
             // creo una copia della forma negli appunti (e' possible incollare piu' volte la forma negli appunti)
             copia=new Forma(appunti);
             // aggiungo la forma al documento
-            documento.add(copia);
+            documento.add(copia);        
+            saved=false;
+            aggiornaViste();
             setStatus("Incollato "+copia.getTipo());
         }
     }//GEN-LAST:event_menuPasteActionPerformed
@@ -825,7 +827,7 @@ public class Controller extends javax.swing.JFrame{
     
     private void aggiornaViste(){
         aggiornaVistaGrafica(null);
-        if (vistaTesto!=null) vistaTesto.aggiorna();
+        if (vistaTesto!=null) vistaTesto.aggiorna(getTestoDocumento());
     }
 
     public void aggiornaVistaGrafica(Graphics2D g){
