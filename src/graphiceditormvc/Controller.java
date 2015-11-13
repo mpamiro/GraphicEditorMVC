@@ -37,9 +37,10 @@ public class Controller extends javax.swing.JFrame{
     int selezionata; // Indice della forma selezionata nel documento
     
     ArrayList<UndoItem> undoList; // Lista dei documenti per gli annullamenti
+    ArrayList<UndoItem> redoList; // Lista dei documenti per il ripristino degli annullamenti
     boolean moved; // Indica se la forma selezionata è stata appena spostata
     Model copia; // Per gestire l'undo del trascinamento
-    
+    Forma appunti; // Oggetto dove memorizzare le forme copiate con il comando Copia o Taglia
     
     /**
      * crea una nuova finestra di tipo Controller
@@ -81,6 +82,11 @@ public class Controller extends javax.swing.JFrame{
         menuSaveAs = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         menuUndo = new javax.swing.JMenuItem();
+        menuRedo = new javax.swing.JMenuItem();
+        jSeparator2 = new javax.swing.JPopupMenu.Separator();
+        menuCut = new javax.swing.JMenuItem();
+        menuCopy = new javax.swing.JMenuItem();
+        menuPaste = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         menuLista = new javax.swing.JMenuItem();
 
@@ -251,6 +257,47 @@ public class Controller extends javax.swing.JFrame{
         });
         jMenu2.add(menuUndo);
 
+        menuRedo.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_Z, java.awt.event.InputEvent.SHIFT_MASK | java.awt.event.InputEvent.CTRL_MASK));
+        menuRedo.setText("Ripristina");
+        menuRedo.setEnabled(false);
+        menuRedo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuRedoActionPerformed(evt);
+            }
+        });
+        jMenu2.add(menuRedo);
+        jMenu2.add(jSeparator2);
+
+        menuCut.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_X, java.awt.event.InputEvent.CTRL_MASK));
+        menuCut.setText("Taglia");
+        menuCut.setEnabled(false);
+        menuCut.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuCutActionPerformed(evt);
+            }
+        });
+        jMenu2.add(menuCut);
+
+        menuCopy.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_C, java.awt.event.InputEvent.CTRL_MASK));
+        menuCopy.setText("Copia");
+        menuCopy.setEnabled(false);
+        menuCopy.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuCopyActionPerformed(evt);
+            }
+        });
+        jMenu2.add(menuCopy);
+
+        menuPaste.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_V, java.awt.event.InputEvent.CTRL_MASK));
+        menuPaste.setText("Incolla");
+        menuPaste.setEnabled(false);
+        menuPaste.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuPasteActionPerformed(evt);
+            }
+        });
+        jMenu2.add(menuPaste);
+
         jMenuBar1.add(jMenu2);
 
         jMenu3.setText("Visualizza");
@@ -302,14 +349,24 @@ public class Controller extends javax.swing.JFrame{
 
     private void menuUndoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuUndoActionPerformed
         if(undoList.size()>0){
+            // Inserisco un elemento nella lista di redo (descrizione dell'ultimo undo, documento corrente)
+            createRedo(undoList.get(0).description, documento);
             // Sostituisco il documento con quello memorizzato nella lista di Undo
             documento=undoList.get(0).documento;
+            // Se ho annullato un inserimento e c'era una forma selezionata, annullo la selezione
+            // TODO: la selezione andrebbe annullata solo se la forma eliminata con l'undo era quella effettivamente selezionata
+            if(selezionata!=-1 && undoList.get(0).description.equals("inserisci")){
+                selezionata=-1;
+                menuCut.setEnabled(false);
+                menuCopy.setEnabled(false);
+                setStatus("Nessuna forma selezionata");
+            }
             saved=false;
             // Elimino l'ultimo elemento inserito nella lista di undo
             undoList.remove(0);
             // Aggiorno la scritta della voce di menu Undo
             if(undoList.size()>0){
-                menuUndo.setText(undoList.get(0).description);
+                menuUndo.setText("Annulla "+undoList.get(0).description);
             }
             else{
                 menuUndo.setText("Annulla");
@@ -372,6 +429,7 @@ public class Controller extends javax.swing.JFrame{
         salvaConNome();
     }//GEN-LAST:event_menuSaveAsActionPerformed
 
+    // Visualizza una finestra con una descrizione testuale del documento
     private void menuListaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuListaActionPerformed
         if(documento!=null){
             if(vistaTesto==null) vistaTesto=new WndVistaView(this);
@@ -380,6 +438,67 @@ public class Controller extends javax.swing.JFrame{
             vistaTesto.aggiorna();
         }
     }//GEN-LAST:event_menuListaActionPerformed
+
+    private void menuRedoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuRedoActionPerformed
+        if(redoList.size()>0){
+            // Inserisco un elemento nella lista di undo (descrizione dell'ultimo redo, documento corrente)
+            createUndo(redoList.get(0).description, documento);
+            // Sostituisco il documento con quello memorizzato nella lista dei Redo
+            documento=redoList.get(0).documento;
+            saved=false;
+            // Elimino l'ultimo elemento inserito nella lista di Redo
+            redoList.remove(0);
+            // Aggiorno la scritta della voce di menu Ripristina
+            if(redoList.size()>0){
+                menuRedo.setText("Ripristina "+redoList.get(0).description);
+            }
+            else{
+                menuRedo.setText("Ripristina");
+                menuRedo.setEnabled(false);
+            }
+            aggiornaViste();
+        }
+    }//GEN-LAST:event_menuRedoActionPerformed
+
+    
+   
+    /* ***************************************************************************************** */
+    /* ********************* Gestione comandi Taglia, Copia e Incolla ************************** */
+ 
+    
+    private void menuCopyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuCopyActionPerformed
+        // Copio la forma selezionata negli appunti
+        if(selezionata!=-1){
+            appunti=new Forma(documento.getForma(selezionata));
+            menuPaste.setEnabled(true);
+        }
+    }//GEN-LAST:event_menuCopyActionPerformed
+
+    // inserisco nel documento la forma contenuta negli appunti, spostandola di delta pixel in basso e a destra
+    private void menuPasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPasteActionPerformed
+        int delta=5;
+        Forma copia;
+        if(appunti!=null){
+            createUndo("incolla");
+            // sposto la forma negli appunti di delta pixel in basso e a destra (in modo che non si sovrapponga alla forma originale)
+            appunti.sposta(appunti.getX()+delta, appunti.getY()+delta);
+            // creo una copia della forma negli appunti (e' possible incollare piu' volte la forma negli appunti)
+            copia=new Forma(appunti);
+            // aggiungo la forma al documento
+            documento.add(copia);
+            setStatus("Incollato "+copia.getTipo());
+        }
+    }//GEN-LAST:event_menuPasteActionPerformed
+
+    private void menuCutActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuCutActionPerformed
+        // elimino la forma selezionata dal documento e la copio negli appunti
+        if(selezionata!=-1){
+            createUndo("taglia");
+            setStatus("Tagliata forma "+selezionata);
+        }
+        menuCopyActionPerformed(evt);
+        elimina();
+    }//GEN-LAST:event_menuCutActionPerformed
 
     
     /**
@@ -433,14 +552,19 @@ public class Controller extends javax.swing.JFrame{
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
+    private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JLabel lbl_status;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JMenuItem menuClose;
+    private javax.swing.JMenuItem menuCopy;
+    private javax.swing.JMenuItem menuCut;
     private javax.swing.JMenuItem menuLista;
     private javax.swing.JMenuItem menuNew;
     private javax.swing.JMenuItem menuOpen;
+    private javax.swing.JMenuItem menuPaste;
+    private javax.swing.JMenuItem menuRedo;
     private javax.swing.JMenuItem menuSave;
     private javax.swing.JMenuItem menuSaveAs;
     private javax.swing.JMenuItem menuUndo;
@@ -458,7 +582,10 @@ public class Controller extends javax.swing.JFrame{
         // Impostazioni per un documento appena aperto
         saved=true;
         selezionata=-1;
-        undoList=new ArrayList<>();
+        menuCut.setEnabled(false);
+        menuCopy.setEnabled(false);
+        undoList=new ArrayList<UndoItem>(); // Aggiunto UndoItem per compatibilità con Java 6 
+        redoList=new ArrayList<UndoItem>(); // Aggiunto UndoItem per compatibilità con Java 6 
         menuSave.setEnabled(true);
         menuSaveAs.setEnabled(true);
         menuClose.setEnabled(true);   
@@ -479,11 +606,16 @@ public class Controller extends javax.swing.JFrame{
                       return;
               }
           }
-          // Svuoto la lista di undo
+          // Svuoto la lista di undo e quella di redo
           undoList.clear();
+          redoList.clear();
           // Disabilito le voci di menu legate al documento
           menuUndo.setText("Annulla");
           menuUndo.setEnabled(false);
+          menuRedo.setText("Ripristina");
+          menuRedo.setEnabled(false);
+          menuCut.setEnabled(false);
+          menuCopy.setEnabled(false);
           menuSave.setEnabled(false);
           menuSaveAs.setEnabled(false);
           menuClose.setEnabled(false);
@@ -519,12 +651,22 @@ public class Controller extends javax.swing.JFrame{
     private void elimina(MouseEvent e){
         // Se c'è una forma alla posizione del mouse la seleziono
         if(seleziona(e)!=-1){
-            createUndo("Annulla elimina");
+            createUndo("elimina");
             // Elimino la forma selezionata
+            elimina();
+            setStatus("Eliminata forma");
+        }
+    }
+    
+    // Elimina la forma selezionata
+    private void elimina(){
+        if(selezionata!=-1){
             documento.elimina(getSelezionata());
+            selezionata=-1;
+            menuCut.setEnabled(false);
+            menuCopy.setEnabled(false);
             saved=false;
             aggiornaViste();
-            setStatus("Eliminata forma");
         }
     }
     
@@ -532,14 +674,20 @@ public class Controller extends javax.swing.JFrame{
     private int seleziona(MouseEvent e){
         // Ottengo le coordinate del mouse
         Point posizione=e.getPoint();
-        // Deseleziono l'eventuale forma selezionata
-        int selezionata=-1;
         // Seleziono la forma alla posizione del mouse
         selezionata=seleziona(posizione.x, posizione.y);
-        setStatus("Selezionata forma "+selezionata);
+        if(selezionata!=-1){
+            setStatus("Selezionata forma "+selezionata);
+            menuCut.setEnabled(true);
+            menuCopy.setEnabled(true);
+        }
+        else{
+            setStatus("Nessuna forma selezionata");
+            menuCut.setEnabled(false);
+            menuCopy.setEnabled(false);           
+        }
         return selezionata;
     }
-    
 
     /**
      * Seleziona la forma in primo piano alle coordinate x,y
@@ -574,7 +722,7 @@ public class Controller extends javax.swing.JFrame{
      * Il tipo di forma inserita dipende dallo strumento selezionato.
      */
     private void inserisci(MouseEvent e){
-        createUndo("Annulla inserisci");
+        createUndo("inserisci");
         TipoForma tipo;
         // Ottengo le coordinate del mouse
         Point posizione=e.getPoint();
@@ -615,7 +763,23 @@ public class Controller extends javax.swing.JFrame{
         undoList.add(0,new UndoItem(description,copia));
         if(undoList.size()>10) undoList.remove(10);
         if(undoList.size()==1) menuUndo.setEnabled(true);
-        menuUndo.setText(description);
+        menuUndo.setText("Annulla "+description);
+    }
+    
+    // Aggiunge una voce di undo all'elenco degli annullamenti
+    private void createUndo(UndoItem undo){
+        undoList.add(0,undo);
+        if(undoList.size()>10) undoList.remove(10);
+        if(undoList.size()==1) menuUndo.setEnabled(true);
+        menuUndo.setText("Annulla "+undo.description);
+    }   
+    
+    // Aggiunge una voce di redo all'elenco dei ripristini degli annullamenti
+    private void createRedo(String description, Model copia){
+        redoList.add(0,new UndoItem(description,copia));
+        if(redoList.size()>10) redoList.remove(10);
+        if(redoList.size()==1) menuRedo.setEnabled(true);
+        menuRedo.setText("Ripristina "+description);
     }
     
     // Salva il documento in un nuovo file
@@ -724,7 +888,7 @@ public class Controller extends javax.swing.JFrame{
             @Override
             public void mouseReleased(MouseEvent e) {
                 if(copia!=null && moved && getSelezionata()!=-1){
-                    createUndo("Annulla sposta",copia);
+                    createUndo("sposta",copia);
                     copia=null;
                     moved=false;
                 }

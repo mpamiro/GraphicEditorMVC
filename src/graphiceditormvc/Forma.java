@@ -96,6 +96,15 @@ public class Forma implements Serializable{
     }
     
     /**
+     * Crea una copia della forma ricevuta come parametro
+     * 
+     * @param copia     la forma di cui fare la copia
+     */
+    public Forma(Forma copia){
+        this(copia.tipo, copia.x, copia.y, copia.width, copia.height, copia.colore);
+    }
+    
+    /**
      * Disegna la forma sul componente il cui gestore grafico viene passato come parametro.
      * 
      * @param   g   il gestore grafico del componente su cui disegnare la forma
