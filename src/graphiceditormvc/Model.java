@@ -25,7 +25,7 @@ public class Model implements Serializable{
     public Model(int width, int height){
         this.height=height;
         this.width=width;
-        forme=new ArrayList<>();
+        forme=new ArrayList<Forma>();
     }
         
     /**
@@ -43,7 +43,7 @@ public class Model implements Serializable{
     public Model(Model copy){
         this.height=copy.height;
         this.width=copy.width;
-        forme=new ArrayList<>();
+        forme=new ArrayList<Forma>();
         for(int i=0;i<copy.forme.size();i++){
             Forma c=copy.forme.get(i);
             Forma f=new Forma(c.getTipo(),c.getX(),c.getY(),c.getWidth(),c.getHeight(),c.getColore());

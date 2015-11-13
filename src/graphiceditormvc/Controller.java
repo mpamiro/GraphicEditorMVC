@@ -455,7 +455,7 @@ public class Controller extends javax.swing.JFrame{
         aggiornaViste();
         // Impostazioni per un documento appena aperto
         saved=true;
-        undoList=new ArrayList<>();
+        undoList=new ArrayList<UndoItem>();
         menuSave.setEnabled(true);
         menuSaveAs.setEnabled(true);
         menuClose.setEnabled(true);   
