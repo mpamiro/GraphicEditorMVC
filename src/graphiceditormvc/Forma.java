@@ -105,23 +105,6 @@ public class Forma implements Serializable{
     }
     
     /**
-     * Disegna la forma sul componente il cui gestore grafico viene passato come parametro.
-     * 
-     * @param   g   il gestore grafico del componente su cui disegnare la forma
-     */
-    public void disegna(Graphics2D g){
-        g.setColor(colore);
-        if(tipo==TipoForma.QUADRATO) g.fillRect(x, y, width, height);
-        else if(tipo==TipoForma.CERCHIO) g.fillOval(x, y, width, height);
-        else{
-            // Triangolo
-            int[] xPoints={x+width/2,x+width,x};
-            int[] yPoints={y,y+height,y+height};
-            g.fillPolygon(xPoints, yPoints, 3);
-        }
-    }
-    
-    /**
      * Stabilisce se il punto di coordinate (x,y) e' contenuto nella forma.
      * 
      * @param x la coordinata x del punto da controllare

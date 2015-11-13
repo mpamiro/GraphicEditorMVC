@@ -135,24 +135,4 @@ public class Model implements Serializable{
         }
         return descrizione;
     }
-    
-    /**
-     * Disegna il documento in un componente di tipo JPanel (o di una sottoclasse)
-     * 
-     * @param g il contesto grafico del componente in cui disegnare
-     * @param viewSize le dimensioni del componente in cui disegnare
-     */
-    public void disegna(Graphics2D g, Dimension viewSize){
-        // L'area occupata dal documento ha sfondo bianco
-        g.setColor(Color.white);
-        g.fillRect(0, 0, viewSize.width, viewSize.height);
-        // Disegno le forme incluse nel documento
-        for(int i=0;i<nForme();i++){
-            getForma(i).disegna(g);
-        }
-        // L'area intorno al documento è grigia
-        g.setColor(Color.GRAY);
-        g.fillRect(getWidth(), 0, viewSize.width-getWidth(), viewSize.height);
-        g.fillRect(0, getHeight(), viewSize.width, viewSize.height-getHeight());        
-    }
-}
+  }

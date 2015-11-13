@@ -768,14 +768,6 @@ public class Controller extends javax.swing.JFrame{
         menuUndo.setText("Annulla "+description);
     }
     
-    // Aggiunge una voce di undo all'elenco degli annullamenti
-    private void createUndo(UndoItem undo){
-        undoList.add(0,undo);
-        if(undoList.size()>10) undoList.remove(10);
-        if(undoList.size()==1) menuUndo.setEnabled(true);
-        menuUndo.setText("Annulla "+undo.description);
-    }   
-    
     // Aggiunge una voce di redo all'elenco dei ripristini degli annullamenti
     private void createRedo(String description, Model copia){
         redoList.add(0,new UndoItem(description,copia));
@@ -825,14 +817,13 @@ public class Controller extends javax.swing.JFrame{
         }
     }
     
-    private void aggiornaViste(){
-        aggiornaVistaGrafica(null);
-        if (vistaTesto!=null) vistaTesto.aggiorna(getTestoDocumento());
+    public Model getDocumento(){
+        return documento;
     }
-
-    public void aggiornaVistaGrafica(Graphics2D g){
-        if(g==null) g=vistaGrafica.getViewGraphics();
-        documento.disegna(g, vistaGrafica.getViewSize());   
+    
+    private void aggiornaViste(){
+        vistaGrafica.aggiorna();
+        if (vistaTesto!=null) vistaTesto.aggiorna(getTestoDocumento());
     }
 
     /**
