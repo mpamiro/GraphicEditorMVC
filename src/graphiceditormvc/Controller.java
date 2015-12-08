@@ -1,10 +1,13 @@
 package graphiceditormvc;
 
+import com.itextpdf.awt.PdfGraphics2D;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
 import java.io.*;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.PdfWriter;
 
 /**
  * La classe e' la finestra principale del programma GraphicEditorMVC.
@@ -80,6 +83,8 @@ public class Controller extends javax.swing.JFrame{
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         menuSave = new javax.swing.JMenuItem();
         menuSaveAs = new javax.swing.JMenuItem();
+        jSeparator4 = new javax.swing.JPopupMenu.Separator();
+        menuPdf = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         menuUndo = new javax.swing.JMenuItem();
         menuRedo = new javax.swing.JMenuItem();
@@ -87,6 +92,18 @@ public class Controller extends javax.swing.JFrame{
         menuCut = new javax.swing.JMenuItem();
         menuCopy = new javax.swing.JMenuItem();
         menuPaste = new javax.swing.JMenuItem();
+        jSeparator5 = new javax.swing.JPopupMenu.Separator();
+        menuPortaAvanti = new javax.swing.JMenuItem();
+        menuPortaInFondo = new javax.swing.JMenuItem();
+        jMenu4 = new javax.swing.JMenu();
+        jMenuItem3 = new javax.swing.JMenuItem();
+        jMenuItem4 = new javax.swing.JMenuItem();
+        jMenu5 = new javax.swing.JMenu();
+        jMenuItem5 = new javax.swing.JMenuItem();
+        jMenuItem6 = new javax.swing.JMenuItem();
+        jMenuItem7 = new javax.swing.JMenuItem();
+        jSeparator6 = new javax.swing.JPopupMenu.Separator();
+        jMenuItem8 = new javax.swing.JMenuItem();
         jMenu3 = new javax.swing.JMenu();
         menuLista = new javax.swing.JMenuItem();
 
@@ -113,7 +130,7 @@ public class Controller extends javax.swing.JFrame{
 
         tools_group.add(btn_select);
         btn_select.setSelected(true);
-        btn_select.setText("Select");
+        btn_select.setText("Seleziona");
         btn_select.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_selectActionPerformed(evt);
@@ -122,7 +139,7 @@ public class Controller extends javax.swing.JFrame{
         jPanel1.add(btn_select);
 
         tools_group.add(btn_delete);
-        btn_delete.setText("Delete");
+        btn_delete.setText("Elimina");
         btn_delete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_deleteActionPerformed(evt);
@@ -131,7 +148,7 @@ public class Controller extends javax.swing.JFrame{
         jPanel1.add(btn_delete);
 
         tools_group.add(btn_square);
-        btn_square.setText("Square");
+        btn_square.setText("Quadrato");
         btn_square.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_squareActionPerformed(evt);
@@ -140,7 +157,7 @@ public class Controller extends javax.swing.JFrame{
         jPanel1.add(btn_square);
 
         tools_group.add(btn_circle);
-        btn_circle.setText("Circle");
+        btn_circle.setText("Cerchio");
         btn_circle.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_circleActionPerformed(evt);
@@ -149,7 +166,7 @@ public class Controller extends javax.swing.JFrame{
         jPanel1.add(btn_circle);
 
         tools_group.add(btn_triangle);
-        btn_triangle.setText("Triangle");
+        btn_triangle.setText("Triangolo");
         btn_triangle.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_triangleActionPerformed(evt);
@@ -242,6 +259,16 @@ public class Controller extends javax.swing.JFrame{
             }
         });
         jMenu1.add(menuSaveAs);
+        jMenu1.add(jSeparator4);
+
+        menuPdf.setText("Esporta PDF");
+        menuPdf.setEnabled(false);
+        menuPdf.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuPdfActionPerformed(evt);
+            }
+        });
+        jMenu1.add(menuPdf);
 
         jMenuBar1.add(jMenu1);
 
@@ -297,8 +324,54 @@ public class Controller extends javax.swing.JFrame{
             }
         });
         jMenu2.add(menuPaste);
+        jMenu2.add(jSeparator5);
+
+        menuPortaAvanti.setText("Porta avanti");
+        menuPortaAvanti.setEnabled(false);
+        menuPortaAvanti.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuPortaAvantiActionPerformed(evt);
+            }
+        });
+        jMenu2.add(menuPortaAvanti);
+
+        menuPortaInFondo.setText("Porta in fondo");
+        menuPortaInFondo.setEnabled(false);
+        menuPortaInFondo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuPortaInFondoActionPerformed(evt);
+            }
+        });
+        jMenu2.add(menuPortaInFondo);
 
         jMenuBar1.add(jMenu2);
+
+        jMenu4.setText("Strumenti");
+
+        jMenuItem3.setText("Seleziona");
+        jMenu4.add(jMenuItem3);
+
+        jMenuItem4.setText("Elimina");
+        jMenu4.add(jMenuItem4);
+
+        jMenu5.setText("Inserisci");
+
+        jMenuItem5.setText("Quadrato");
+        jMenu5.add(jMenuItem5);
+
+        jMenuItem6.setText("Cerchio");
+        jMenu5.add(jMenuItem6);
+
+        jMenuItem7.setText("Triangolo");
+        jMenu5.add(jMenuItem7);
+
+        jMenu4.add(jMenu5);
+        jMenu4.add(jSeparator6);
+
+        jMenuItem8.setText("Scegli Colore");
+        jMenu4.add(jMenuItem8);
+
+        jMenuBar1.add(jMenu4);
 
         jMenu3.setText("Visualizza");
 
@@ -359,6 +432,8 @@ public class Controller extends javax.swing.JFrame{
                 selezionata=-1;
                 menuCut.setEnabled(false);
                 menuCopy.setEnabled(false);
+                menuPortaAvanti.setEnabled(false);
+                menuPortaInFondo.setEnabled(false);
                 setStatus("Nessuna forma selezionata");
             }
             saved=false;
@@ -478,7 +553,7 @@ public class Controller extends javax.swing.JFrame{
     private void menuPasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPasteActionPerformed
         int delta=5;
         Forma copia;
-        if(appunti!=null){
+        if(documento!=null && appunti!=null){
             createUndo("incolla");
             // sposto la forma negli appunti di delta pixel in basso e a destra (in modo che non si sovrapponga alla forma originale)
             appunti.sposta(appunti.getX()+delta, appunti.getY()+delta);
@@ -501,6 +576,79 @@ public class Controller extends javax.swing.JFrame{
         menuCopyActionPerformed(evt);
         elimina();
     }//GEN-LAST:event_menuCutActionPerformed
+
+    private void menuPdfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPdfActionPerformed
+        Document document = new Document(PageSize.getRectangle(""+documento.getWidth()+" "+documento.getHeight()));
+        PdfWriter writer;
+        String pdfPath="";
+        if(file==null){
+            // Scelgo nome e percorso del file
+            JFileChooser fc=new JFileChooser(System.getProperty("user.dir"));
+            int returnVal=fc.showSaveDialog(this);
+            if(returnVal==JFileChooser.APPROVE_OPTION){
+              // Associo il nuovo file al documento
+              File file = fc.getSelectedFile();
+              pdfPath=file.getPath();
+              if(pdfPath.indexOf(".pdf")==-1) pdfPath=file.getPath()+".pdf";
+            }
+        }
+        else{
+            // Scelgo lo stesso nome del file in cui ho salvato il documento, con estensione pdf
+            pdfPath=file.getPath();
+            pdfPath=pdfPath.substring(0, pdfPath.lastIndexOf('.', pdfPath.length()-1))+".pdf";
+        }
+        try {
+            writer = PdfWriter.getInstance(document, new FileOutputStream(pdfPath));
+            document.open();
+            PdfGraphics2D g2 = new PdfGraphics2D(writer.getDirectContent(),documento.getWidth(),documento.getHeight());
+
+            // Create your graphics here - draw on the g2 Graphics object
+            this.selezionata=-1; // Deselziono la forma selezionata per non stamparla più chiara
+            vistaGrafica.disegna(g2);
+            
+            g2.dispose();
+            document.close();
+            setStatus("File pdf esportato correttamente");
+        } catch (Exception e) {
+            setStatus("Errore nell'esportazione in pdf");
+        }
+    }//GEN-LAST:event_menuPdfActionPerformed
+
+    private void menuPortaInFondoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPortaInFondoActionPerformed
+        // Sposta sullo sfondo la forma sezionata
+        if(selezionata!=-1){
+            createUndo("porta avanti");
+            setStatus("Porta avanti forma "+selezionata);
+            // Copio la forma selezionata
+            Forma f=documento.getForma(selezionata);
+            // La elimino dall'array delle forme
+            documento.elimina(selezionata);
+            // La aggiungo in testa all'array delle forme (spostando le altre forme di una posizione verso destra)
+            documento.add(0,f);
+            // Seleziono la forma appena spostata (ora è in testa all'array)
+            selezionata=0;
+            saved=false;
+            aggiornaViste();
+        }             
+    }//GEN-LAST:event_menuPortaInFondoActionPerformed
+
+    private void menuPortaAvantiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPortaAvantiActionPerformed
+        // Sposta in primo piano la forma selezionata
+        if(selezionata!=-1){
+            createUndo("porta avanti");
+            setStatus("Porta avanti forma "+selezionata);
+            // Copio la forma selezionata
+            Forma f=documento.getForma(selezionata);
+            // La elimino dall'array delle forme
+            documento.elimina(selezionata);
+            // La aggiungo in coda all'array delle forme
+            documento.add(f);
+            // Seleziono la forma appena spostata (ora è in fondo all'array)
+            selezionata=documento.nForme()-1;
+            saved=false;
+            aggiornaViste();
+        }       
+    }//GEN-LAST:event_menuPortaAvantiActionPerformed
 
     
     /**
@@ -551,11 +699,22 @@ public class Controller extends javax.swing.JFrame{
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
+    private javax.swing.JMenu jMenu4;
+    private javax.swing.JMenu jMenu5;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem3;
+    private javax.swing.JMenuItem jMenuItem4;
+    private javax.swing.JMenuItem jMenuItem5;
+    private javax.swing.JMenuItem jMenuItem6;
+    private javax.swing.JMenuItem jMenuItem7;
+    private javax.swing.JMenuItem jMenuItem8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JPopupMenu.Separator jSeparator4;
+    private javax.swing.JPopupMenu.Separator jSeparator5;
+    private javax.swing.JPopupMenu.Separator jSeparator6;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JLabel lbl_status;
     private javax.swing.JPanel mainPanel;
@@ -566,6 +725,9 @@ public class Controller extends javax.swing.JFrame{
     private javax.swing.JMenuItem menuNew;
     private javax.swing.JMenuItem menuOpen;
     private javax.swing.JMenuItem menuPaste;
+    private javax.swing.JMenuItem menuPdf;
+    private javax.swing.JMenuItem menuPortaAvanti;
+    private javax.swing.JMenuItem menuPortaInFondo;
     private javax.swing.JMenuItem menuRedo;
     private javax.swing.JMenuItem menuSave;
     private javax.swing.JMenuItem menuSaveAs;
@@ -582,15 +744,18 @@ public class Controller extends javax.swing.JFrame{
         vistaGrafica.aggiungiAscoltatore(new AscoltaMouse());
         aggiornaViste();
         // Impostazioni per un documento appena aperto
-        saved=true;
+        saved=false;
         selezionata=-1;
+        menuPortaAvanti.setEnabled(false);
+        menuPortaInFondo.setEnabled(false);
         menuCut.setEnabled(false);
         menuCopy.setEnabled(false);
         undoList=new ArrayList<UndoItem>(); // Aggiunto UndoItem per compatibilità con Java 6 
         redoList=new ArrayList<UndoItem>(); // Aggiunto UndoItem per compatibilità con Java 6 
         menuSave.setEnabled(true);
         menuSaveAs.setEnabled(true);
-        menuClose.setEnabled(true);   
+        menuClose.setEnabled(true); 
+        menuPdf.setEnabled(true);
         menuLista.setEnabled(true);
     }
     
@@ -618,9 +783,12 @@ public class Controller extends javax.swing.JFrame{
           menuRedo.setEnabled(false);
           menuCut.setEnabled(false);
           menuCopy.setEnabled(false);
+          menuPortaAvanti.setEnabled(false);
+          menuPortaInFondo.setEnabled(false);
           menuSave.setEnabled(false);
           menuSaveAs.setEnabled(false);
           menuClose.setEnabled(false);
+          menuPdf.setEnabled(false);
           menuLista.setEnabled(false);
           // Rimuovo il nome del file dalla barra del titolo della finestra
           setTitle("Drawing");
@@ -665,6 +833,8 @@ public class Controller extends javax.swing.JFrame{
         if(selezionata!=-1){
             documento.elimina(getSelezionata());
             selezionata=-1;
+            menuPortaAvanti.setEnabled(false);
+            menuPortaInFondo.setEnabled(false);
             menuCut.setEnabled(false);
             menuCopy.setEnabled(false);
             saved=false;
@@ -680,11 +850,15 @@ public class Controller extends javax.swing.JFrame{
         selezionata=seleziona(posizione.x, posizione.y);
         if(selezionata!=-1){
             setStatus("Selezionata forma "+selezionata);
+            menuPortaAvanti.setEnabled(true);
+            menuPortaInFondo.setEnabled(true);
             menuCut.setEnabled(true);
             menuCopy.setEnabled(true);
         }
         else{
             setStatus("Nessuna forma selezionata");
+            menuPortaAvanti.setEnabled(false);
+            menuPortaInFondo.setEnabled(false);
             menuCut.setEnabled(false);
             menuCopy.setEnabled(false);           
         }
@@ -786,6 +960,7 @@ public class Controller extends javax.swing.JFrame{
               // Associo il nuovo file al documento
               file = fc.getSelectedFile();
               // Salvo il documento nel file appena creato
+              saved=false;
               salva();
               // Aggiungo il nome del file alla barra del titolo del programma
               setTitle(getTitle() + " - " + file.getName());

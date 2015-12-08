@@ -80,6 +80,18 @@ public class Model implements Serializable{
     public void add(Forma f){
         forme.add(f);
     }
+
+    /**
+     * Aggiunge una forma al documento nella posizione index dell'array delle forme, 
+     * spostando tutti gli altri elementi di una posizione verso destra.
+     * 
+     * 
+     * @param f la forma da aggiungere
+     */
+    public void add(int index, Forma f){
+        forme.add(index,f);
+    }
+        
     
     /**
      * Elimina la forma il cui indice viene passato come parametro.

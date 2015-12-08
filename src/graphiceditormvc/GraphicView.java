@@ -97,27 +97,22 @@ public class GraphicView extends JScrollPane{
     }
     
     private void disegnaForma(Graphics2D g,Forma f,boolean selezionata){
-        int alpha=64; // Opacità della forma da sovrapporre alla forma selezionata
+        int alpha=100; // Opacità della forma da sovrapporre alla forma selezionata
         g.setColor(f.getColore());
         if(f.getTipo()==TipoForma.QUADRATO) g.fillRect(f.getX(), f.getY(), f.getWidth(), f.getHeight());
         else if(f.getTipo()==TipoForma.CERCHIO) g.fillOval(f.getX(), f.getY(), f.getWidth(), f.getHeight());
         else{
             // Triangolo
             int[] xPoints={f.getX()+f.getWidth()/2,f.getX()+f.getWidth(),f.getX()};
-            int[] yPoints={f.getY(),f.getY()+f.getHeight(),f.getY(),f.getHeight()};
+            int[] yPoints={f.getY(),f.getY()+f.getHeight(),f.getY()+f.getHeight()};
             g.fillPolygon(xPoints, yPoints, 3);
         }
         // La forma selezionata è più chiara (sovrappongo una forma bianca semitraspaente)
         if(selezionata){
-            g.setColor(new Color(255,255,255,alpha));
-            if(f.getTipo()==TipoForma.QUADRATO) g.fillRect(f.getX(), f.getY(), f.getWidth(), f.getHeight());
-            else if(f.getTipo()==TipoForma.CERCHIO) g.fillOval(f.getX(), f.getY(), f.getWidth(), f.getHeight());
-            else{
-                // Triangolo
-                int[] xPoints={f.getX()+f.getWidth()/2,f.getX()+f.getWidth(),f.getX()};
-                int[] yPoints={f.getY(),f.getY()+f.getHeight(),f.getY(),f.getHeight()};
-                g.fillPolygon(xPoints, yPoints, 3);
-            }
+            // Creo la forma semitrasparente
+            Forma highlight=new Forma(f.getTipo(),f.getX(), f.getY(), f.getWidth(), f.getHeight(),new Color(255,255,255,alpha));
+            // Chiamo disegnaForma
+            disegnaForma(g,highlight,false);
         }        
     }
 }
