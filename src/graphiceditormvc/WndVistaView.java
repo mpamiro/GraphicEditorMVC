@@ -8,7 +8,7 @@ import java.awt.Point;
  * @author mauropamiro
  */
 public class WndVistaView extends javax.swing.JDialog {
-    Controller controller;
+    Controller controller; // Il Controller
     
     /**
      * Costruttore: crea la finestra e memorizza un riferimento al Controller (la finestra principale)
@@ -19,6 +19,7 @@ public class WndVistaView extends javax.swing.JDialog {
         super(controller, false);
         initComponents();
         this.controller=controller;
+        // La finestra viene visualizzata alla destra della finestra principale (Controller)
         this.setLocation(new Point(controller.getX()+controller.getWidth()*3/4,controller.getY()+50));
     }
     
@@ -27,8 +28,22 @@ public class WndVistaView extends javax.swing.JDialog {
      */
     public void aggiorna(String testo){
         txtArea.setText(testo);
-        repaint();
+        repaint(); // Ridisegna la finestra
     }
+    
+
+    // All'apertura della finestra, visualizza al suo interno la descrizione testuale del documento
+    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
+        aggiorna(controller.getTestoDocumento());
+    }//GEN-LAST:event_formWindowOpened
+
+
+    // Chiusura della finesra
+    private void btnChiudiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChiudiActionPerformed
+        setVisible(false);
+    }//GEN-LAST:event_btnChiudiActionPerformed
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -70,14 +85,6 @@ public class WndVistaView extends javax.swing.JDialog {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void btnChiudiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChiudiActionPerformed
-        setVisible(false);
-    }//GEN-LAST:event_btnChiudiActionPerformed
-
-    private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        aggiorna(controller.getTestoDocumento());
-    }//GEN-LAST:event_formWindowOpened
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnChiudi;

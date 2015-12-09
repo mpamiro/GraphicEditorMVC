@@ -1,8 +1,9 @@
 package graphiceditormvc;
 
 import java.awt.*;
-import java.awt.geom.Ellipse2D;
-import java.io.Serializable;
+import java.awt.geom.Ellipse2D; // Per disegnare cerchi
+import java.io.Serializable; // Per salvare la forma in un file binario
+
 
 /**
  * Rappresenta un elemento grafico di un documento di tipo Model.
@@ -17,7 +18,39 @@ public class Forma implements Serializable{
     private TipoForma tipo;
     private Color colore;
     private int x, y, width, height;
+    
+    
+    /**
+     * Crea una nuova forma
+     * 
+     * @param tipo      il tipo di forma
+     * @param x         la coordinata x del vertice in alto a sinistra del rettangolo che contiene la forma
+     * @param y         la coordinata y del vertice in alto a sinistra del rettangolo che contiene la forma
+     * @param width     la larghezza del rettangolo che contiene la forma
+     * @param height    l'altezza del rettangolo che contiene la forma
+     * @param colore    il colore di riempimento della forma
+     */
+    public Forma(TipoForma tipo, int x, int y, int width, int height, Color colore){
+        this.tipo=tipo;
+        this.x=x;
+        this.y=y;
+        this.width=width;
+        this.height=height;
+        this.colore=colore;
+    }
 
+
+    /**
+     * Crea una copia della forma ricevuta come parametro
+     * 
+     * @param copia     la forma di cui fare la copia
+     */
+    public Forma(Forma copia){
+        this(copia.tipo, copia.x, copia.y, copia.width, copia.height, copia.colore);
+    }
+    
+    
+    
     /**
      * Restituisce la larghezza del rettangolo che contiene la forma.
      * 
@@ -76,60 +109,6 @@ public class Forma implements Serializable{
         return tipo;
     }
 
-    /**
-     * Crea una nuova forma
-     * 
-     * @param tipo      il tipo di forma
-     * @param x         la coordinata x del vertice in alto a sinistra del rettangolo che contiene la forma
-     * @param y         la coordinata y del vertice in alto a sinistra del rettangolo che contiene la forma
-     * @param width     la larghezza del rettangolo che contiene la forma
-     * @param height    l'altezza del rettangolo che contiene la forma
-     * @param colore    il colore di riempimento della forma
-     */
-    public Forma(TipoForma tipo, int x, int y, int width, int height, Color colore){
-        this.tipo=tipo;
-        this.x=x;
-        this.y=y;
-        this.width=width;
-        this.height=height;
-        this.colore=colore;
-    }
-    
-    /**
-     * Crea una copia della forma ricevuta come parametro
-     * 
-     * @param copia     la forma di cui fare la copia
-     */
-    public Forma(Forma copia){
-        this(copia.tipo, copia.x, copia.y, copia.width, copia.height, copia.colore);
-    }
-    
-    /**
-     * Stabilisce se il punto di coordinate (x,y) e' contenuto nella forma.
-     * 
-     * @param x la coordinata x del punto da controllare
-     * @param y la coordinata y del punto da controllare
-     * 
-     * @return  true se il punto (x,y) e' contenuto nella forma, false altrimenti
-     */
-    public boolean contiene(int x, int y){
-        Point punto=new Point(x, y);
-        if(tipo==TipoForma.CERCHIO){
-            Ellipse2D.Float forma=new Ellipse2D.Float(this.x, this.y, width, height);
-            return forma.contains(punto);
-        }
-        else if(tipo==TipoForma.QUADRATO){
-            Rectangle forma=new Rectangle(this.x,this.y,width,height);
-            return forma.contains(punto);
-        }
-        else{
-            // Triangolo
-            int[] xPoints={this.x+width/2,this.x+width,this.x};
-            int[] yPoints={this.y,this.y+height,this.y+height};
-            Polygon forma=new Polygon(xPoints,yPoints,3);
-            return forma.contains(punto);
-        }
-    }
     
     /**
      * Sposta la forma nel punto (x,y).
@@ -142,6 +121,7 @@ public class Forma implements Serializable{
         this.x=x;
         this.y=y;
     }
+
 
     /**
      * Fornisce una descrizione testuale della forma, del tipo:
@@ -156,5 +136,35 @@ public class Forma implements Serializable{
     public String toString() {
         String descrizione=""+tipo+" ("+x+","+y+") [W:"+width+",H:"+height+"]->"+colore;
         return descrizione;
+    }
+    
+    
+    /**
+     * Stabilisce se il punto di coordinate (x,y) e' contenuto nella forma.
+     * 
+     * @param x la coordinata x del punto da controllare
+     * @param y la coordinata y del punto da controllare
+     * 
+     * @return  true se il punto (x,y) e' contenuto nella forma, false altrimenti
+     */
+    public boolean contiene(int x, int y){
+        // Creo un oggetto Point che rappresenta il punto alle coordinate del mouse
+        Point punto=new Point(x, y);
+        // A seconda del tipo della forma, controllo che il punto sia contenuto nel cerchio
+        if(tipo==TipoForma.CERCHIO){
+            Ellipse2D.Float forma=new Ellipse2D.Float(this.x, this.y, width, height);
+            return forma.contains(punto);
+        }
+        else if(tipo==TipoForma.QUADRATO){
+            Rectangle forma=new Rectangle(this.x,this.y,width,height);
+            return forma.contains(punto);
+        }
+        else{
+            // Triangolo: devo prima creare degli array per memorizzare le coordinate dei tre vertici
+            int[] xPoints={this.x+width/2,this.x+width,this.x};
+            int[] yPoints={this.y,this.y+height,this.y+height};
+            Polygon forma=new Polygon(xPoints,yPoints,3);
+            return forma.contains(punto);
+        }
     }
 }

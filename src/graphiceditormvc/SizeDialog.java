@@ -1,13 +1,17 @@
 package graphiceditormvc;
 
-import java.awt.Dimension;
+import java.awt.Dimension; // Per contenere altezza e larghezza del nuovo documento
+
+
 /**
  * Una finestra di dialogo per chiedere altezza e larghezza di un nuovo documento.
  * 
  * @author mauropamiro
  */
 public class SizeDialog extends javax.swing.JDialog {
-    Dimension d;
+    Dimension d; // Un oggetto in cui memorizzare, alla chiusura della finestra, altezza e larghezza scelte dall'utente
+    
+    
     /**
      * Crea la finestra SizeDialog
      * 
@@ -17,8 +21,27 @@ public class SizeDialog extends javax.swing.JDialog {
     public SizeDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        // Visualizzo la finestra di dialogo al centro della finestra principale
         this.setLocation(parent.getX()+parent.getWidth()/2-this.getWidth()/2, parent.getY()+parent.getHeight()/2-this.getHeight()/2);
     }
+
+
+    /**
+     * Una volta che l'utente ha premuto OK, restituisce le dimensioni
+     * specificate nelle caselle di testo della finestra.
+     * 
+     * @return un oggetto della classe Dimension che contiene larghezza e altezza 
+     *         inserite dall'utente nei campi di testo della finestra
+     * 
+     * @see Dimension
+     */
+    public Dimension getDimensioni(){
+        return d;
+    }
+
+
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -79,49 +102,71 @@ public class SizeDialog extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
-        try{
-            // Assegna all'attributo d la dimensione inserita nelle caselle di testo
-            d=new Dimension(Integer.parseInt(txtWidth.getText()),Integer.parseInt(txtHeight.getText()));
-            chiudi();
-        }catch(NumberFormatException e){
-            txtWidth.setText("");
-            txtHeight.setText("");            
-            d=null;
-        }
-    }//GEN-LAST:event_btnOKActionPerformed
 
-    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
-        chiudi();
-    }//GEN-LAST:event_btnCancelActionPerformed
 
+
+
+
+
+    /***********************************************************************************/
+    /********************** Apertura e chiusura della finestra *************************/
+    /***********************************************************************************/
+
+
+    // Metodo eseguito quando la finestra di dialogo viene aperta:
+    // di default, propone la creazione di un docmento di 400x400 pixel.
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         txtWidth.setText("400");
         txtHeight.setText("400");
         d=null;
     }//GEN-LAST:event_formWindowOpened
 
+
+    // Metodo chiamato alla pressione del pulsante X nella barra del titolo della finestra di dialogo: chiude la finestra
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         chiudi();
     }//GEN-LAST:event_formWindowClosing
 
+
+    // Chiude e dealloca la finestra
     private void chiudi(){
         setVisible(false);
         dispose();
     }
     
-    /**
-     * Una volta che l'utente ha premuto OK, restituisce le dimensioni
-     * specificate nelle caselle di testo della finestra.
-     * 
-     * @return un oggetto della classe Dimension che contiene larghezza e altezza 
-     *         inserite dall'utente nei campi di testo della finestra
-     * 
-     * @see Dimension
-     */
-    public Dimension getDimensioni(){
-        return d;
-    }
+    
+
+
+    /***********************************************************************************/
+    /********************** Gestione dei pulsanti OK e Cancel **************************/
+    /***********************************************************************************/
+
+
+    // Metodo chiamato alla pressione del pulsante OK: chiude la finestra e memorizza 
+    // le dimensioni scelte dall'utente nell'attributo d di tipo Dimension (da java.awt).
+    private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
+        try{
+            // Assegna all'attributo d la dimensione inserita nelle caselle di testo
+            d=new Dimension(Integer.parseInt(txtWidth.getText()),Integer.parseInt(txtHeight.getText()));
+            // Chiude la finestra di dialogo
+            chiudi();
+        }catch(NumberFormatException e){
+            // In caso di errore cancella il contenuto delle caselle di testo
+            txtWidth.setText("");
+            txtHeight.setText("");            
+            // La dimensione non è stata scelta
+            d=null;
+        }
+    }//GEN-LAST:event_btnOKActionPerformed
+
+
+    // Metodo chiamato alla pressione del pulsante Cancel: chiude la finestra
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+        chiudi();
+    }//GEN-LAST:event_btnCancelActionPerformed
+
+
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCancel;
