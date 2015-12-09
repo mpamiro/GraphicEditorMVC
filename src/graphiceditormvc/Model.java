@@ -2,11 +2,6 @@ package graphiceditormvc;
 
 import java.util.*;
 import java.io.Serializable; // Per salvare il documento in un file binario
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D; // Graphics2D rappresenta un contesto grafico, cioè una "penna" con cui disegnare. 
-                            // Ogni componente in cui si può disegnare ha il proprio contesto grafico.
-                            // Disegnare utilizando un contesto grafico significa disegnare nel componente ad esso associato.
                             
 /**
  * Un documento di tipo Model che contiene una serie di forme colorate 
@@ -153,6 +148,7 @@ public class Model implements Serializable{
      * spostando tutti gli altri elementi di una posizione verso destra.
      * 
      * 
+     * @param index la posizione dell'array delle forme in cui inserire la forma
      * @param f la forma da aggiungere
      */
     public void add(int index, Forma f){

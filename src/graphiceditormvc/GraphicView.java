@@ -69,7 +69,6 @@ public class GraphicView extends JScrollPane{
      * Chiama il metodo disegna, passandogli il contesto grafico
      * del pannello il cui disegnare la vista del documento
      * 
-     * @param g il contesto grafico del pannello in cui disegnare la vista
      */
     public void aggiorna(){
         // Chiama il metodo disegna
@@ -82,6 +81,10 @@ public class GraphicView extends JScrollPane{
     // Disegna il documento usando il contesto grafico g.
     // Il contesto grafico può essere quello del pannello interno o quello associato a un file pdf
     // (vedi metodo per l'esportazione in pdf nella classe Controller).
+    /**
+     *
+     * @param g
+     */
     public void disegna(Graphics2D g){
         // Ottiene il documento dal Controller
         Model documento=controller.getDocumento();

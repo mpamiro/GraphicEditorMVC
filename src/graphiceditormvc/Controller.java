@@ -643,10 +643,10 @@ public class Controller extends javax.swing.JFrame{
             // Se la finestra è stata chiusa premendo OK
             if(returnVal==JFileChooser.APPROVE_OPTION){
               // Associo il nuovo file al documento pdf
-              File file = fc.getSelectedFile();
-              pdfPath=file.getPath();
+              File pdf_file = fc.getSelectedFile();
+              pdfPath=pdf_file.getPath();
               // Se il nome del file non contiene l'estensione pdf, la aggiungo
-              if(pdfPath.indexOf(".pdf")==-1) pdfPath=file.getPath()+".pdf";
+              if(pdfPath.indexOf(".pdf")==-1) pdfPath=pdf_file.getPath()+".pdf";
             }
         }
         // Se invece ho già salvato il documento
@@ -854,9 +854,9 @@ public class Controller extends javax.swing.JFrame{
     // Prende come parametro una descrizione dell'ultima operazione effettuata.
     private void createUndo(String description){
         // Creo una cpia del documento corrente
-        Model copia=new Model(documento);
+        Model undo_copia=new Model(documento);
         // Creo una voce di undo
-        createUndo(description,copia);
+        createUndo(description,undo_copia);
     }
     
     
@@ -960,7 +960,7 @@ public class Controller extends javax.swing.JFrame{
     // Inserisco nel documento la forma contenuta negli appunti, spostandola di delta pixel in basso e a destra
     private void menuPasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPasteActionPerformed
         int delta=5; // Spostamento della forma incollata rispetto alla forma originale
-        Forma copia;
+        Forma copia_appunti;
         // Se c'è un documento aperto e gli appunti contengono qualcosa
         if(documento!=null && appunti!=null){
             // Creo una voce di undo
@@ -968,15 +968,15 @@ public class Controller extends javax.swing.JFrame{
             // sposto la forma negli appunti di delta pixel in basso e a destra (in modo che non si sovrapponga alla forma originale)
             appunti.sposta(appunti.getX()+delta, appunti.getY()+delta);
             // creo una copia della forma negli appunti (e' possible incollare piu' volte la forma memorizzata negli appunti)
-            copia=new Forma(appunti);
+            copia_appunti=new Forma(appunti);
             // aggiungo la forma al documento
-            documento.add(copia);
+            documento.add(copia_appunti);
             // Il documento è stato modificato        
             saved=false;
             // Aggiorno le viste
             aggiornaViste();
             // Aggiorno la barra di stato (stampo anche il tipo della forma incollata)
-            setStatus("Incollato "+copia.getTipo());
+            setStatus("Incollato "+copia_appunti.getTipo());
         }
     }//GEN-LAST:event_menuPasteActionPerformed
 
@@ -1278,8 +1278,10 @@ public class Controller extends javax.swing.JFrame{
     
     
     
-    // Una classe interna per gentire gli eventi generati dal mouse all'interno della vista
-    class AscoltaMouse extends MouseAdapter{
+    /**
+     * Una classe interna per gentire gli eventi generati dal mouse all'interno della vista
+     */
+    public class AscoltaMouse extends MouseAdapter{
 
             /**
              * Gestione del click del mouse sulla vista.

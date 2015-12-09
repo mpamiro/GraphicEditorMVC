@@ -13,7 +13,7 @@ public class WndVistaView extends javax.swing.JDialog {
     /**
      * Costruttore: crea la finestra e memorizza un riferimento al Controller (la finestra principale)
      * 
-     * @param cotroller il Controller associato alla vista (la finestra principale)
+     * @param controller 
      */
     public WndVistaView(Controller controller) {
         super(controller, false);
@@ -25,6 +25,8 @@ public class WndVistaView extends javax.swing.JDialog {
     
      /**
      * Aggiorna la vista del documento, modificando il contenuto dell'area di testo
+     * 
+     * @param testo 
      */
     public void aggiorna(String testo){
         txtArea.setText(testo);
