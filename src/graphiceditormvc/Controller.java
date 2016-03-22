@@ -1,5 +1,11 @@
 package graphiceditormvc;
 
+/*
+TODO:
+1) implementare l'aggiornamento delle view con Observable e Observer
+2) controllare la serializzazione (forse serializza forme due volte)
+*/
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -9,6 +15,7 @@ import java.io.*;
 import com.itextpdf.awt.PdfGraphics2D;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.PdfWriter;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  * La classe e' la finestra principale del programma GraphicEditorMVC. Il
@@ -501,11 +508,16 @@ public class Controller extends javax.swing.JFrame {
             // Faccio scegliere il file in cui salvare il documento con la finestra di dialogo predefinita JFileChooser.
             // La finestra mostra il contenuto della directory corrente: System.getProperty("user.dir") 
             JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
+            FileNameExtensionFilter filter = new FileNameExtensionFilter("Drawing","drw");
+            fc.setFileFilter(filter);
+        
             int returnVal = fc.showSaveDialog(this);
             // Se la finestra è stata chiusa premendo OK
             if (returnVal == JFileChooser.APPROVE_OPTION) {
-                // Associo il nuovo file al documento
+                // Associo il nuovo file al documento (aggiungendo eventualmente l'estensione .drw)
                 file = fc.getSelectedFile();
+                if(file.getName().indexOf(".drw")!=file.getName().length()-4)
+                    file=new File(file.getPath()+".drw");
                 // Salvo il documento nel file appena creato
                 saved = false;
                 salva();
@@ -554,6 +566,8 @@ public class Controller extends javax.swing.JFrame {
         // Faccio scegliere il file da aprire dalla finestra di dialogo predefinita JFileChooser.
         // La finestra mostra il contenuto della directory corrente: System.getProperty("user.dir") 
         JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Drawing","drw");
+        fc.setFileFilter(filter);
         int returnVal = fc.showOpenDialog(this);
         // Se la finestra è stata chiusa premendo OK
         if (returnVal == JFileChooser.APPROVE_OPTION) {
