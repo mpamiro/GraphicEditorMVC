@@ -15,9 +15,18 @@ import java.io.Serializable; // Per salvare la forma in un file binario
  * @see Model
  */
 public class Forma implements Serializable{
+    /** Il tipo della forma. */
     private TipoForma tipo;
+    /** Il colore della forma. */
     private Color colore;
-    private int x, y, width, height;
+    /** La coordinata x dell'angolo in alto a sinistra del quadrato che inscrive la forma. */
+    private int x;
+    /** La coordinata y dell'angolo in alto a sinistra del quadrato che inscrive la forma. */
+    private int y;
+    /** La larghezza forma. */
+    private int width;
+    /** L'altezza della forma. */
+    private int height;
     
     
     /**
@@ -50,7 +59,6 @@ public class Forma implements Serializable{
     }
     
     
-    
     /**
      * Restituisce la larghezza del rettangolo che contiene la forma.
      * 
@@ -60,6 +68,7 @@ public class Forma implements Serializable{
         return width;
     }
 
+    
     /**
      * Restituisce l'altezza del rettangolo che contiene la forma.
      * 

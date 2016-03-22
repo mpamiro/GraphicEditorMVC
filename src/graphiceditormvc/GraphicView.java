@@ -15,8 +15,10 @@ import java.awt.*;
  * @author mauropamiro
  */
 public class GraphicView extends JScrollPane{
-    private Controller controller; // Il Controller
-    private ViewPanel pannello; // Il pannello in cui visualizzare la vista grafica del documento
+    /** Il Controller associato alla vista. */
+    private Controller controller; 
+    /** Il pannello in cui visualizzare la vista grafica del documento. */
+    private ViewPanel pannello; 
     
     /**
      * Costruttore che crea il pannello scorrevole, aggiungendogli un secondo pannello
@@ -78,12 +80,11 @@ public class GraphicView extends JScrollPane{
     }
     
     
-    // Disegna il documento usando il contesto grafico g.
-    // Il contesto grafico può essere quello del pannello interno o quello associato a un file pdf
-    // (vedi metodo per l'esportazione in pdf nella classe Controller).
-    /**
+    /** Disegna il documento usando il contesto grafico g.
+     * Il contesto grafico può essere quello del pannello interno o quello associato a un file pdf
+     * (vedi metodo per l'esportazione in pdf nella classe Controller).
      *
-     * @param g
+     * @param g il contesto grafico con cui disegnare
      */
     public void disegna(Graphics2D g){
         // Ottiene il documento dal Controller
@@ -112,11 +113,12 @@ public class GraphicView extends JScrollPane{
     }
     
     
-    // Disegno una forma usando il contesto grafico ricevuto come parametro.
-    // Parametri:
-    // - il contesto grafico in cui disegnare
-    // - laforma da disegnare
-    // - un boolean che indica se la forma è quella selezionata
+    /** Disegno una forma usando il contesto grafico ricevuto come parametro.
+     * 
+     * @param g il contesto grafico in cui disegnare
+     * @param f la forma da disegnare
+     * @param selezionata indica se la forma è quella selezionata 
+     */
     private void disegnaForma(Graphics2D g,Forma f,boolean selezionata){
         int alpha=100; // Opacità della forma bianca da sovrapporre alla forma selezionata
         
@@ -153,7 +155,11 @@ public class GraphicView extends JScrollPane{
     }
     
     
-    // Quando viene ridisegnata la GraphicView viene ridisegnato anche il pannello interno
+    /** Metodo chiamato quando il componente deve essere ridisegnato.
+     * Quando viene ridisegnata la GraphicView viene ridisegnato anche il pannello interno.
+     * 
+     * @param g il contesto grafico in cui disegnare
+     */
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);

@@ -13,8 +13,12 @@ import java.io.Serializable; // Per salvare il documento in un file binario
  * @author mauropamiro
  */
 public class Model implements Serializable{
-    private int height, width; // Dimensioni del documento in pixel
-    private ArrayList<Forma> forme; // L'array in cui vengono memorizzate le forme via via aggiunte al documento
+    /** Altezza del documento in pixel. */
+    private int height;
+    /** Larghezza del documento in pixel. */
+    private int width;
+    /** L'array in cui vengono memorizzate le forme via via aggiunte al documento. */
+    private ArrayList<Forma> forme; 
 
 
 

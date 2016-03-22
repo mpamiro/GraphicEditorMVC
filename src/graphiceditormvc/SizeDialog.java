@@ -9,7 +9,8 @@ import java.awt.Dimension; // Per contenere altezza e larghezza del nuovo docume
  * @author mauropamiro
  */
 public class SizeDialog extends javax.swing.JDialog {
-    Dimension d; // Un oggetto in cui memorizzare, alla chiusura della finestra, altezza e larghezza scelte dall'utente
+    /** Un oggetto in cui memorizzare, alla chiusura della finestra, altezza e larghezza scelte dall'utente. */
+    Dimension d; 
     
     
     /**
@@ -113,8 +114,11 @@ public class SizeDialog extends javax.swing.JDialog {
     /***********************************************************************************/
 
 
-    // Metodo eseguito quando la finestra di dialogo viene aperta:
-    // di default, propone la creazione di un docmento di 400x400 pixel.
+    /** Metodo eseguito quando la finestra di dialogo viene aperta.
+     * di default, propone la creazione di un docmento di 400x400 pixel.
+     * 
+     * @param evt l'evento generato dall'apertura della finestra
+     */
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         txtWidth.setText("400");
         txtHeight.setText("400");
@@ -122,13 +126,16 @@ public class SizeDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_formWindowOpened
 
 
-    // Metodo chiamato alla pressione del pulsante X nella barra del titolo della finestra di dialogo: chiude la finestra
+    /** Metodo chiamato alla pressione del pulsante X nella barra del titolo della finestra di dialogo: chiude la finestra
+     * 
+     * @param evt l'evento generato dalla pressione del tasto X nella barra del titolo 
+     */
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         chiudi();
     }//GEN-LAST:event_formWindowClosing
 
 
-    // Chiude e dealloca la finestra
+    /** Chiude e dealloca la finestra. */
     private void chiudi(){
         setVisible(false);
         dispose();
@@ -142,8 +149,11 @@ public class SizeDialog extends javax.swing.JDialog {
     /***********************************************************************************/
 
 
-    // Metodo chiamato alla pressione del pulsante OK: chiude la finestra e memorizza 
-    // le dimensioni scelte dall'utente nell'attributo d di tipo Dimension (da java.awt).
+    /** Metodo chiamato alla pressione del pulsante OK: chiude la finestra e memorizza 
+     * le dimensioni scelte dall'utente nell'attributo d di tipo Dimension (da java.awt).
+     * 
+     * @param evt l'evento generato dalla pressione del pulsante
+     */
     private void btnOKActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnOKActionPerformed
         try{
             // Assegna all'attributo d la dimensione inserita nelle caselle di testo
@@ -160,7 +170,10 @@ public class SizeDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_btnOKActionPerformed
 
 
-    // Metodo chiamato alla pressione del pulsante Cancel: chiude la finestra
+    /** Metodo chiamato alla pressione del pulsante Cancel: chiude la finestra.
+     * 
+     * @param evt l'evento generato dalla pressione del pulsante
+     */
     private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
         chiudi();
     }//GEN-LAST:event_btnCancelActionPerformed

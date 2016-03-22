@@ -8,12 +8,13 @@ import java.awt.Point;
  * @author mauropamiro
  */
 public class WndVistaView extends javax.swing.JDialog {
-    Controller controller; // Il Controller
+    /** Il Controller associato a questa vista. */
+    Controller controller; 
     
     /**
-     * Costruttore: crea la finestra e memorizza un riferimento al Controller (la finestra principale)
+     * Costruttore: crea la finestra e memorizza un riferimento al Controller (la finestra principale).
      * 
-     * @param controller 
+     * @param controller il Controller associato a questa vista
      */
     public WndVistaView(Controller controller) {
         super(controller, false);
@@ -24,9 +25,9 @@ public class WndVistaView extends javax.swing.JDialog {
     }
     
      /**
-     * Aggiorna la vista del documento, modificando il contenuto dell'area di testo
+     * Aggiorna la vista del documento, modificando il contenuto dell'area di testo.
      * 
-     * @param testo 
+     * @param testo la descrizione testuale del documento
      */
     public void aggiorna(String testo){
         txtArea.setText(testo);
@@ -34,13 +35,20 @@ public class WndVistaView extends javax.swing.JDialog {
     }
     
 
-    // All'apertura della finestra, visualizza al suo interno la descrizione testuale del documento
+    /** Chiamato all'apertura della finestra, visualizza al suo interno la descrizione testuale del documento. 
+     *  Recupera dal controller la descrizione testuale del documento e la passa a aggiorna.
+     * 
+     * @param evt l'evento generato dall'apertura della finestra
+     */
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
         aggiorna(controller.getTestoDocumento());
     }//GEN-LAST:event_formWindowOpened
 
 
-    // Chiusura della finesra
+    /** Chiude della finesra premendo sulla X nella barra del titolo.
+     * 
+     * @param evt l'evento generato dallapressione della X sulla barra del titolo
+     */
     private void btnChiudiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnChiudiActionPerformed
         setVisible(false);
     }//GEN-LAST:event_btnChiudiActionPerformed

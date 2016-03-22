@@ -8,17 +8,19 @@ package graphiceditormvc;
  * @author mauropamiro
  */
 public class UndoItem{
-    String description;
+    /** una stringa che rappresenta l'operazione annullata o da ripristinare. */
+    String descrizione;
+    /** una copia del documento prima dell'operazione da annullare o dopo l'operazione da ripristinare. */
     Model documento;
 
     /**
      * Cre un elemento della lista degli annullamenti.
      * 
-     * @param description   descrizione dell'operazione da annullare
+     * @param descrizione   descrizione dell'operazione da annullare
      * @param documento     il documento così come era prima della modifica da annullare
      */
-    public UndoItem(String description, Model documento) {
-        this.description = description;
+    public UndoItem(String descrizione, Model documento) {
+        this.descrizione = descrizione;
         this.documento = documento;
     }
 }
