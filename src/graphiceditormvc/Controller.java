@@ -11,10 +11,6 @@ import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
 import java.io.*;
-// Package e classi per l'esportazione del documento in pdf
-import com.itextpdf.awt.PdfGraphics2D;
-import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.PdfWriter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -41,7 +37,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  * 
  * @author mauropamiro
   */
-public class Controller extends javax.swing.JFrame {
+public class Controller extends javax.swing.JFrame implements MouseListener, MouseMotionListener{
     /** Il documento aperto all'interno del programma */
     private Model documento; 
     /**  File in cui è salvato il documento */
@@ -85,7 +81,6 @@ public class Controller extends javax.swing.JFrame {
     private javax.swing.JPopupMenu.Separator jSeparator1;
     private javax.swing.JPopupMenu.Separator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
-    private javax.swing.JPopupMenu.Separator jSeparator4;
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JLabel lbl_status;
@@ -97,7 +92,6 @@ public class Controller extends javax.swing.JFrame {
     private javax.swing.JMenuItem menuNew;
     private javax.swing.JMenuItem menuOpen;
     private javax.swing.JMenuItem menuPaste;
-    private javax.swing.JMenuItem menuPdf;
     private javax.swing.JMenuItem menuPortaAvanti;
     private javax.swing.JMenuItem menuPortaInFondo;
     private javax.swing.JMenuItem menuRedo;
@@ -145,8 +139,6 @@ public class Controller extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         menuSave = new javax.swing.JMenuItem();
         menuSaveAs = new javax.swing.JMenuItem();
-        jSeparator4 = new javax.swing.JPopupMenu.Separator();
-        menuPdf = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
         menuUndo = new javax.swing.JMenuItem();
         menuRedo = new javax.swing.JMenuItem();
@@ -312,16 +304,6 @@ public class Controller extends javax.swing.JFrame {
             }
         });
         jMenu1.add(menuSaveAs);
-        jMenu1.add(jSeparator4);
-
-        menuPdf.setText("Esporta PDF");
-        menuPdf.setEnabled(false);
-        menuPdf.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                menuPdfActionPerformed(evt);
-            }
-        });
-        jMenu1.add(menuPdf);
 
         jMenuBar1.add(jMenu1);
 
@@ -587,7 +569,7 @@ public class Controller extends javax.swing.JFrame {
                 setTitle(getTitle() + " - " + file.getName());
                 // Aggiorno la barra di stato
                 setStatus("File " + file.getName() + " aperto");
-            } catch (Exception i) {
+            } catch (Exception e) {
                 // In caso di errore, lo segnalo nella barra di stato
                 setStatus("Errore nell'apertura di " + file.getName());
                 // Nessun file è stato aperto
@@ -640,7 +622,6 @@ public class Controller extends javax.swing.JFrame {
             menuSave.setEnabled(false);
             menuSaveAs.setEnabled(false);
             menuClose.setEnabled(false);
-            menuPdf.setEnabled(false);
             menuElenco.setEnabled(false);
             // Rimuovo il nome del file dalla barra del titolo della finestra
             setTitle("Drawing");
@@ -665,68 +646,6 @@ public class Controller extends javax.swing.JFrame {
     }
 
     
-    /** Metodo eseguito alla pressione della voce di menu File -> Esporta PDF:
-     * crea un file PDF disegnandoci le forme che compongono il documento.
-     * Il formato pdf è viene usato come formato vettoriale di interscambio tra applicazioni grafiche.
-     * Utilizza le classi com.itextpdf.awt.PdfGraphics2D, com.itextpdf.text.pdf.PdfWriter e quelle del package com.itextpdf.text
-     * 
-     * @param evt evento generato dal click sulla voce di menu
-     */ 
-    private void menuPdfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPdfActionPerformed
-        // Creo un nuovo documento pdf (oggetto Document da com.itextpdf.text)
-        Document document = new Document(PageSize.getRectangle("" + documento.getWidth() + " " + documento.getHeight()));
-        // Dichiaro un oggetto PdfWriter (da com.itextpdf.text.pdf) per scrivere nel documento pdf
-        PdfWriter writer;
-        String pdfPath = ""; // Percorso del file pdf da salvare
-
-        // Se non ho mai salvato il documento
-        if (file == null) {
-            // Scelgo nome e percorso del file, utilizzando la finestra predefinita JFileChooser
-            JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
-            int returnVal = fc.showSaveDialog(this);
-            // Se la finestra è stata chiusa premendo OK
-            if (returnVal == JFileChooser.APPROVE_OPTION) {
-                // Associo il nuovo file al documento pdf
-                File pdf_file = fc.getSelectedFile();
-                pdfPath = pdf_file.getPath();
-                // Se il nome del file non contiene l'estensione pdf, la aggiungo
-                if (pdfPath.indexOf(".pdf") == -1) {
-                    pdfPath = pdf_file.getPath() + ".pdf";
-                }
-            }
-        } // Se invece ho già salvato il documento
-        else {
-            // Scelgo lo stesso nome del file in cui ho salvato il documento, con estensione pdf
-            pdfPath = file.getPath();
-            pdfPath = pdfPath.substring(0, pdfPath.lastIndexOf('.', pdfPath.length() - 1)) + ".pdf";
-        }
-        // Disegno le forme del documento nel file pdf
-        try {
-            // creo il documento pdf, associandolo al PdfWriter creato prima
-            writer = PdfWriter.getInstance(document, new FileOutputStream(pdfPath));
-            document.open();
-
-            // Ottengo un oggetto PdfGraphics2D con cui disegnare il mio documento nel file pdf.
-            // Imposto le dimensioni del documento pdf (uguali a quelle del documento aperto).
-            PdfGraphics2D g2 = new PdfGraphics2D(writer.getDirectContent(), documento.getWidth(), documento.getHeight());
-
-            this.selezionata = -1; // Deselziono la forma selezionata (per non stamparla più chiara anche nel pdf)
-
-            // Disegno il documento nell'oggetto PdfGraphics2D associato al documento pdf:
-            // ciò che disegno con PdfGraphics2D verrà scritto nel fle pdf.
-            vistaGrafica.disegna(g2);
-
-            // Dealloco gli oggetti creati prima e chiudo il file pdf
-            g2.dispose();
-            document.close();
-            // Aggiorno la barra di stato
-            setStatus("File pdf esportato correttamente");
-        } catch (Exception e) {
-            // In caso di errore nell'esportazione, lo segnalo nella barra di stato
-            setStatus("Errore nell'esportazione in pdf");
-        }
-    }//GEN-LAST:event_menuPdfActionPerformed
-
     
     
     
@@ -746,10 +665,11 @@ public class Controller extends javax.swing.JFrame {
         // Creo una nuova vista grafica e la aggiungo al pannello nella finestra del Controller
         vistaGrafica = new GraphicView(this, new Dimension(documento.getWidth(), documento.getHeight()));
         mainPanel.add(vistaGrafica);
+        documento.addObserver(vistaGrafica);
         // Associo alla vista un gestore di eventi
-        vistaGrafica.aggiungiAscoltatore(new AscoltaMouse());
+        vistaGrafica.aggiungiAscoltatore(this);
         // Aggiorno la vista
-        aggiornaViste();
+        //aggiornaViste();
         // Impostazioni per un documento appena aperto:
         saved = false;
         // Nessuna forma selezionata
@@ -766,7 +686,6 @@ public class Controller extends javax.swing.JFrame {
         menuSave.setEnabled(true);
         menuSaveAs.setEnabled(true);
         menuClose.setEnabled(true);
-        menuPdf.setEnabled(true);
         menuElenco.setEnabled(true);
     }
 
@@ -781,46 +700,47 @@ public class Controller extends javax.swing.JFrame {
             // Se la finestra della vista testuale non è ancora stata creata, la creo
             if (vistaTesto == null) {
                 vistaTesto = new WndTextView(this);
+                documento.addObserver(vistaTesto);
             }
             // Visualizzo la finestra
             vistaTesto.setVisible(true);
             // Metto la finestra in primo piano
             vistaTesto.requestFocus();
             // Aggiorno la vista testuale del documento
-            vistaTesto.aggiorna(getTestoDocumento());
+            //vistaTesto.aggiorna(getTestoDocumento());
         }
     }//GEN-LAST:event_menuElencoActionPerformed
 
     /** Aggiorna la vista grafica e, se è aperta, la finestra della vista testuale del documento. */
-    private void aggiornaViste() {
-        vistaGrafica.aggiorna();
-        if (vistaTesto != null) {
-            vistaTesto.aggiorna(getTestoDocumento());
-        }
-    }
+//    private void aggiornaViste() {
+//        vistaGrafica.aggiorna();
+//        if (vistaTesto != null) {
+//            vistaTesto.aggiorna(getTestoDocumento());
+//        }
+//    }
 
     /**
      * Restituisce il documento aperto, null se non c'è nessun documento aperto.
      *
      * @return il documento aperto o null se non c'è nessun documento aperto
      */
-    public Model getDocumento() {
-        return documento;
-    }
-
-    /**
-     * Restituisce una rappresentazione testuale del documento. Se non c'è
-     * nessun documento aperto restituisce la stringa vuota.
-     *
-     * @return una rappresentazione testuale del documento
-     */
-    public String getTestoDocumento() {
-        if (documento != null) {
-            return documento.toString();
-        } else {
-            return "";
-        }
-    }
+//    public Model getDocumento() {
+//        return documento;
+//    }
+//
+//    /**
+//     * Restituisce una rappresentazione testuale del documento. Se non c'è
+//     * nessun documento aperto restituisce la stringa vuota.
+//     *
+//     * @return una rappresentazione testuale del documento
+//     */
+//    public String getTestoDocumento() {
+//        if (documento != null) {
+//            return documento.toString();
+//        } else {
+//            return "";
+//        }
+//    }
 
     
     
@@ -896,7 +816,7 @@ public class Controller extends javax.swing.JFrame {
                 menuUndo.setEnabled(false);
             }
             // Aggiorno le viste
-            aggiornaViste();
+            //aggiornaViste();
         }
     }//GEN-LAST:event_menuUndoActionPerformed
 
@@ -966,7 +886,7 @@ public class Controller extends javax.swing.JFrame {
                 menuRedo.setEnabled(false);
             }
             // Aggiorno le viste
-            aggiornaViste();
+            //aggiornaViste();
         }
     }//GEN-LAST:event_menuRedoActionPerformed
 
@@ -1036,7 +956,7 @@ public class Controller extends javax.swing.JFrame {
             // Il documento è stato modificato        
             saved = false;
             // Aggiorno le viste
-            aggiornaViste();
+            //aggiornaViste();
             // Aggiorno la barra di stato (stampo anche il tipo della forma incollata)
             setStatus("Incollato " + copia_appunti.getTipo());
         }
@@ -1117,7 +1037,7 @@ public class Controller extends javax.swing.JFrame {
         // Il documento è stato modificato       
         saved = false;
         // Aggiorno le viste
-        aggiornaViste();
+        //aggiornaViste();
         // Aggiorno la barra di stato
         setStatus("Inserito " + f.getTipo());
     }
@@ -1226,7 +1146,7 @@ public class Controller extends javax.swing.JFrame {
             // Il documento è stato modificato
             saved = false;
             // Aggiorno le viste
-            aggiornaViste();
+            //aggiornaViste();
         }
     }
 
@@ -1240,12 +1160,12 @@ public class Controller extends javax.swing.JFrame {
         // Se c'è una forma selezionata, la sposto
         if (getSelezionata() != -1) {
             // Aggiorno, nel documento, la posizione della forma selezionata
-            documento.getForma(getSelezionata()).sposta(posizione.x, posizione.y);
+            documento.spostaForma(getSelezionata(),posizione);
             moved = true;
             // Il documento è stato modificato
             saved = false;
             // Aggiorno le viste
-            aggiornaViste();
+            //aggiornaViste();
             // Aggiorno la barra di stato
             setStatus("Spostata forma " + getSelezionata());
         }
@@ -1280,7 +1200,7 @@ public class Controller extends javax.swing.JFrame {
             // Il documento è stato modificato
             saved = false;
             // Aggiorno le viste
-            aggiornaViste();
+            //aggiornaViste();
         }
     }//GEN-LAST:event_menuPortaInFondoActionPerformed
 
@@ -1314,7 +1234,7 @@ public class Controller extends javax.swing.JFrame {
             // Il documento è stato modificato
             saved = false;
             // Aggiorno le viste
-            aggiornaViste();
+            //aggiornaViste();
         }
     }//GEN-LAST:event_menuPortaAvantiActionPerformed
 
@@ -1357,75 +1277,80 @@ public class Controller extends javax.swing.JFrame {
         });
     }
 
+
+
     /**
-     * Una classe interna per gentire gli eventi generati dal mouse all'interno
-     * della vista
+     * Gestione del click del mouse sulla vista. A seconda dello strumento
+     * selezionato è possibile:
+     * <ul>
+     * <li>selezionare una forma</li>
+     * <li>eliminare una forma</li>
+     * <li>inserire una nuova forma</li>
+     * </ul>
+     *
+     * @param e l'evento generato dal click del mouse
      */
-    public class AscoltaMouse extends MouseAdapter {
-
-        /**
-         * Gestione del click del mouse sulla vista. A seconda dello strumento
-         * selezionato è possibile:
-         * <ul>
-         * <li>selezionare una forma</li>
-         * <li>eliminare una forma</li>
-         * <li>inserire una nuova forma</li>
-         * </ul>
-         *
-         * @param e l'evento generato dal click del mouse
-         */
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            if (btn_select.isSelected()) {
-                seleziona(e);
-            } else if (btn_delete.isSelected()) {
-                elimina(e);
-            } else {
-                inserisci(e);
-            }
-            aggiornaViste();
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        if (btn_select.isSelected()) {
+            seleziona(e);
+        } else if (btn_delete.isSelected()) {
+            elimina(e);
+        } else {
+            inserisci(e);
         }
+        //aggiornaViste();
+    }
 
-        /**
-         * Cliccando su una forma, ne viene fatta una copia: se la forma
-         * selezionata verrà spostata, la copia verrà inserita nella lista degli
-         * annullamenti.
-         *
-         * @param e l'evento generato dalla pressione del tasto sinistro del
-         * mouse
-         */
-        @Override
-        public void mousePressed(MouseEvent e) {
-            if (getSelezionata() != -1) {
-                copia = new Model(documento);
-            }
-        }
-
-        /**
-         * Al rilascio del tasto destro del mouse, se la forma selezionata è
-         * stata spostata, la copia del documento fatta in precedenza viene
-         * inserita nella lista degli annullamenti.
-         *
-         * @param e l'evento generato dal rilascio del tasto sinistro del mouse
-         */
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            if (copia != null && moved && getSelezionata() != -1) {
-                createUndo("sposta", copia);
-                copia = null;
-                moved = false;
-            }
-        }
-
-        /**
-         * Trascinando la forma selezionata è possibile spostarla all'interno
-         * del documento
-         *
-         * @param e l'evento generato dal trascinamento del mouse
-         */
-        @Override
-        public void mouseDragged(MouseEvent e) {
-            sposta(e);
+    /**
+     * Cliccando su una forma, ne viene fatta una copia: se la forma
+     * selezionata verrà spostata, la copia verrà inserita nella lista degli
+     * annullamenti.
+     *
+     * @param e l'evento generato dalla pressione del tasto sinistro del
+     * mouse
+     */
+    @Override
+    public void mousePressed(MouseEvent e) {
+        if (getSelezionata() != -1) {
+            copia = new Model(documento);
         }
     }
+
+    /**
+     * Al rilascio del tasto destro del mouse, se la forma selezionata è
+     * stata spostata, la copia del documento fatta in precedenza viene
+     * inserita nella lista degli annullamenti.
+     *
+     * @param e l'evento generato dal rilascio del tasto sinistro del mouse
+     */
+    @Override
+    public void mouseReleased(MouseEvent e) {
+        if (copia != null && moved && getSelezionata() != -1) {
+            createUndo("sposta", copia);
+            copia = null;
+            moved = false;
+        }
+    }
+
+    /**
+     * Trascinando la forma selezionata è possibile spostarla all'interno
+     * del documento
+     *
+     * @param e l'evento generato dal trascinamento del mouse
+     */
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        sposta(e);
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {}
+
+    @Override
+    public void mouseExited(MouseEvent e) {}
+
+    @Override
+    public void mouseMoved(MouseEvent e) {}
 }
+

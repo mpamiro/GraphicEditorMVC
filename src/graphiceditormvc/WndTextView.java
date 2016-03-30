@@ -1,13 +1,15 @@
 package graphiceditormvc;
 
 import java.awt.Point;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Una finestra di dialogo in cui viene visualizzata una rappresentazione testuale del documento
  * 
  * @author mauropamiro
  */
-public class WndTextView extends javax.swing.JDialog {
+public class WndTextView extends javax.swing.JDialog implements Observer{
     /** Il Controller associato a questa vista. */
     Controller controller; 
     
@@ -41,7 +43,8 @@ public class WndTextView extends javax.swing.JDialog {
      * @param evt l'evento generato dall'apertura della finestra
      */
     private void formWindowOpened(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowOpened
-        aggiorna(controller.getTestoDocumento());
+        // TODO: visualizzare il documento all'apertura della finestra
+        //aggiorna(controller.getTestoDocumento());
     }//GEN-LAST:event_formWindowOpened
 
 
@@ -100,4 +103,11 @@ public class WndTextView extends javax.swing.JDialog {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea txtArea;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void update(Observable o, Object arg) {
+        String testo=((Model)o).toString();
+        txtArea.setText(testo);
+        repaint(); // Ridisegna la finestra    
+    }
 }

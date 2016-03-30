@@ -1,5 +1,6 @@
 package graphiceditormvc;
 
+import java.awt.Point;
 import java.util.*;
 import java.io.Serializable; // Per salvare il documento in un file binario
                             
@@ -12,7 +13,7 @@ import java.io.Serializable; // Per salvare il documento in un file binario
  * 
  * @author mauropamiro
  */
-public class Model implements Serializable{
+public class Model extends Observable implements Serializable{
     /** Altezza del documento in pixel. */
     private int height;
     /** Larghezza del documento in pixel. */
@@ -145,6 +146,8 @@ public class Model implements Serializable{
      */
     public void add(Forma f){
         forme.add(f);
+        setChanged();
+        notifyObservers();
     }
 
     /**
@@ -157,6 +160,9 @@ public class Model implements Serializable{
      */
     public void add(int index, Forma f){
         forme.add(index,f);
+        // TODO: verificare dove viene invocato questo metodo
+        setChanged();
+        notifyObservers();
     }
         
     
@@ -169,7 +175,14 @@ public class Model implements Serializable{
     public void elimina(int index){
         try{
             forme.remove(index);
+            setChanged();
+            notifyObservers();
         }catch(IndexOutOfBoundsException e){}        
     }
-    
+
+    void spostaForma(int index, Point posizione) {
+        getForma(index).sposta(posizione.x, posizione.y); 
+        setChanged();
+        notifyObservers();   
+    }    
   }

@@ -2,6 +2,8 @@ package graphiceditormvc;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Observable;
+import java.util.Observer;
 
 
 
@@ -14,7 +16,7 @@ import java.awt.*;
  * 
  * @author mauropamiro
  */
-public class GraphicView extends JScrollPane{
+public class GraphicView extends JScrollPane implements Observer{
     /** Il Controller associato alla vista. */
     private Controller controller; 
     /** Il pannello in cui visualizzare la vista grafica del documento. */
@@ -53,11 +55,11 @@ public class GraphicView extends JScrollPane{
     /**
      * Associa al pannello interno un ascoltatore (listener) per gli eventi generati dal mouse
      * 
-     * @param ascoltaVista un ascoltatore (listener) per gli eventi generati dal mouse
+     * @param ascoltatore un ascoltatore (listener) per gli eventi generati dal mouse
      */
-    public void aggiungiAscoltatore(Controller.AscoltaMouse ascoltaVista) {
-        pannello.addMouseListener(ascoltaVista);
-        pannello.addMouseMotionListener(ascoltaVista);
+    public void aggiungiAscoltatore(Controller ascoltatore) {
+        pannello.addMouseListener(ascoltatore);
+        pannello.addMouseMotionListener(ascoltatore);
     }
     
     
@@ -73,22 +75,16 @@ public class GraphicView extends JScrollPane{
      * 
      */
     public void aggiorna(){
-        // Chiama il metodo disegna
-        disegna((Graphics2D)pannello.getGraphics());
-        // Ridisegna il contenuto della finestra
-        repaint();
+
     }
     
     
-    /** Disegna il documento usando il contesto grafico g.
-     * Il contesto grafico può essere quello del pannello interno o quello associato a un file pdf
-     * (vedi metodo per l'esportazione in pdf nella classe Controller).
-     *
-     * @param g il contesto grafico con cui disegnare
-     */
-    public void disegna(Graphics2D g){
-        // Ottiene il documento dal Controller
-        Model documento=controller.getDocumento();
+    /** Disegna il documento.
+     */    
+    @Override
+    public void update(Observable o, Object arg) {
+        Model documento=(Model)o;
+        Graphics2D g=(Graphics2D)pannello.getGraphics();
         boolean isSelezionata;
         // Colora di bianco lo sfondo del documento
         // (in realtà viene colorato solo lo sfondo della porzione di documento visibile)
@@ -165,7 +161,6 @@ public class GraphicView extends JScrollPane{
         super.paintComponent(g);
         pannello.repaint();
     }
-    
 }
 
 
@@ -194,8 +189,8 @@ class ViewPanel extends JPanel{
      * 
      * @param g il contesto grafico del componente
      */
-    @Override
-    public void paintComponent(Graphics g){
-        parent.disegna((Graphics2D)g);
-    }    
+//    @Override
+//    public void paintComponent(Graphics g){
+//        parent.disegna((Graphics2D)g);
+//    }    
 }
