@@ -707,17 +707,17 @@ public class Controller extends javax.swing.JFrame implements MouseListener, Mou
             // Metto la finestra in primo piano
             vistaTesto.requestFocus();
             // Aggiorno la vista testuale del documento
-            //vistaTesto.aggiorna(getTestoDocumento());
+            vistaTesto.update(documento,null);
         }
     }//GEN-LAST:event_menuElencoActionPerformed
 
     /** Aggiorna la vista grafica e, se è aperta, la finestra della vista testuale del documento. */
-//    private void aggiornaViste() {
-//        vistaGrafica.aggiorna();
-//        if (vistaTesto != null) {
-//            vistaTesto.aggiorna(getTestoDocumento());
-//        }
-//    }
+    private void aggiornaViste() {
+        vistaGrafica.update(documento,null);
+        if (vistaTesto != null) {
+            vistaTesto.aggiorna(documento.toString());
+        }
+    }
 
     /**
      * Restituisce il documento aperto, null se non c'è nessun documento aperto.
@@ -900,7 +900,7 @@ public class Controller extends javax.swing.JFrame implements MouseListener, Mou
                 menuRedo.setEnabled(false);
             }
             // Aggiorno le viste
-            //aggiornaViste();
+            aggiornaViste();
         }
     }//GEN-LAST:event_menuRedoActionPerformed
 
