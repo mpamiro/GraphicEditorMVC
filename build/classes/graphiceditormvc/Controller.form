@@ -199,6 +199,9 @@
     <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
     <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
   </SyntheticProperties>
+  <Events>
+    <EventHandler event="windowClosing" listener="java.awt.event.WindowListener" parameters="java.awt.event.WindowEvent" handler="formWindowClosing"/>
+  </Events>
   <AuxValues>
     <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
@@ -270,9 +273,6 @@
                 <Property name="selected" type="boolean" value="true"/>
                 <Property name="text" type="java.lang.String" value="Seleziona"/>
               </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_selectActionPerformed"/>
-              </Events>
             </Component>
             <Component class="javax.swing.JToggleButton" name="btn_delete">
               <Properties>
@@ -281,9 +281,6 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Elimina"/>
               </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_deleteActionPerformed"/>
-              </Events>
             </Component>
             <Component class="javax.swing.JToggleButton" name="btn_square">
               <Properties>
@@ -292,9 +289,6 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Quadrato"/>
               </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_squareActionPerformed"/>
-              </Events>
             </Component>
             <Component class="javax.swing.JToggleButton" name="btn_circle">
               <Properties>
@@ -303,9 +297,6 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Cerchio"/>
               </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_circleActionPerformed"/>
-              </Events>
             </Component>
             <Component class="javax.swing.JToggleButton" name="btn_triangle">
               <Properties>
@@ -314,9 +305,6 @@
                 </Property>
                 <Property name="text" type="java.lang.String" value="Triangolo"/>
               </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btn_triangleActionPerformed"/>
-              </Events>
             </Component>
             <Component class="javax.swing.JSeparator" name="jSeparator3">
               <Properties>
@@ -370,14 +358,19 @@
         </Container>
       </SubComponents>
     </Container>
-    <Container class="javax.swing.JScrollPane" name="mainScrollPane">
+    <Container class="javax.swing.JPanel" name="mainPanel">
+      <Properties>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="80" green="80" id="gray" palette="1" red="80" type="palette"/>
+        </Property>
+      </Properties>
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
           <BorderConstraints direction="Center"/>
         </Constraint>
       </Constraints>
 
-      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
     </Container>
   </SubComponents>
 </Form>

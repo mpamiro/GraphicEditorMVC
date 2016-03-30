@@ -22,7 +22,6 @@ public class Model extends Observable implements Serializable{
     private ArrayList<Forma> forme; 
 
 
-
     /***********************************************************************************/
     /********************** Costruttori e metodi get/set *******************************/
     /***********************************************************************************/
@@ -69,6 +68,9 @@ public class Model extends Observable implements Serializable{
             this.forme.add(f);
         }
     }
+
+    
+    
     
     /**
      * Restituisce l'altezza del documento
@@ -130,9 +132,7 @@ public class Model extends Observable implements Serializable{
             descrizione+=i+": "+forme.get(i).toString()+"\n";
         }
         return descrizione;
-    }    
-    
-    
+    }     
     
 
     /***********************************************************************************/
@@ -146,6 +146,7 @@ public class Model extends Observable implements Serializable{
      */
     public void add(Forma f){
         forme.add(f);
+        // Notifico le viste della modifica
         setChanged();
         notifyObservers();
     }
@@ -160,7 +161,7 @@ public class Model extends Observable implements Serializable{
      */
     public void add(int index, Forma f){
         forme.add(index,f);
-        // TODO: verificare dove viene invocato questo metodo
+        // Notifico le viste della modifica
         setChanged();
         notifyObservers();
     }
@@ -175,13 +176,21 @@ public class Model extends Observable implements Serializable{
     public void elimina(int index){
         try{
             forme.remove(index);
+            // Notifico le viste della modifica
             setChanged();
             notifyObservers();
         }catch(IndexOutOfBoundsException e){}        
     }
 
-    void spostaForma(int index, Point posizione) {
+    /**
+     * Sposta nella posizione specificata la forma il cui indice viene passato come parametro.
+     * 
+     * @param index l'indice della forma da spostare
+     * @param posizione la posizione in cui spostare la forma
+     */
+    public void spostaForma(int index, Point posizione) {
         getForma(index).sposta(posizione.x, posizione.y); 
+        // Notifico le viste della modifica
         setChanged();
         notifyObservers();   
     }    

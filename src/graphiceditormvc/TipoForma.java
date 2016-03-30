@@ -10,16 +10,10 @@ package graphiceditormvc;
  * @author mauropamiro
  */
 public enum TipoForma{
-    /**
-     * Quadrato 
-     */
+    /** Quadrato  */
     QUADRATO,
-    /**
-     * Cerchio
-     */
+    /** Cerchio */
     CERCHIO,
-    /**
-     * Triangolo
-     */
+    /** Triangolo */
     TRIANGOLO
 }

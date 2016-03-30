@@ -6,8 +6,6 @@ import java.util.Observable;
 import java.util.Observer;
 
 
-
-
 /**
  * Un pannello scorrevole (cioè con con barra di scorrimento orizzontale e verticale)
  * dove disegnare una vista in grafica vettoriale per i documenti di tipo Model.
@@ -30,43 +28,52 @@ public class GraphicView extends JPanel implements Observer{
     public GraphicView(Controller controller, Dimension dimensioni){
         // Associo il controller alla vista
         this.controller=controller;
+        // Il controller intercetta le azioni dell'utente sulla vista
+        addMouseListener(controller);
+        addMouseMotionListener(controller);
+        // La vista ha le dimensioni del documento
         setPreferredSize(dimensioni);
-        setBackground(Color.white);
-    }
-
-
-
-    /**
-     * Associa al pannello interno un ascoltatore (listener) per gli eventi generati dal mouse
-     * 
-     * @param ascoltatore un ascoltatore (listener) per gli eventi generati dal mouse
-     */
-    public void aggiungiAscoltatore(Controller ascoltatore) {
-        addMouseListener(ascoltatore);
-        addMouseMotionListener(ascoltatore);
     }
     
-    
-
     /***********************************************************************************/
     /**************** Aggiornamento della vista e disegno del documento ****************/
     /***********************************************************************************/    
     
-    /** Disegna il documento.
-     */    
+    /**
+     * Metodo chiamato ogni volta che la vista deve essere aggiornata.
+     * 
+     * @param o
+     * @param arg 
+     */
     @Override
     public void update(Observable o, Object arg) {
-        //disegna((Model)o);
+        // Faccio in modo che il componente venga ridisegnato
         revalidate();
         repaint();
     }
-
-    public void disegna(Model documento){
+    
+    
+    /** 
+     * Metodo chiamato automaticamente quando il componente deve essere ridisegnato.
+     * Viene eseguito quando vengono chiamati i metodi revalidate e repaint.
+     * 
+     * @param g il contesto grafico in cui disegnare
+     */
+    @Override
+    public void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        disegna(g);
+    }
+    
+    /**
+     * Disegna il documento, chiedendo al controller un riferimento al Model.
+     * @param g il contesto grafico del componente in cui disegnare
+     */
+    private void disegna(Graphics g){
         boolean isSelezionata;
-        Graphics2D g=(Graphics2D)getGraphics();
-        if(documento==null) documento=controller.getDocumento();
-        // Colora di bianco lo sfondo del documento
-        // (in realtà viene colorato solo lo sfondo della porzione di documento visibile)
+        // Recupero un riferimento al Model
+        Model documento=controller.getDocumento();
+        // Colora di bianco lo sfondo
         g.setColor(Color.white);
         g.fillRect(0, 0, getWidth(), getHeight());
         // Disegno una alla volta le forme contenute nel documento
@@ -87,13 +94,14 @@ public class GraphicView extends JPanel implements Observer{
         g.fillRect(0, documento.getHeight(), getWidth(), getHeight()-documento.getHeight());
     }
     
+    
     /** Disegno una forma usando il contesto grafico ricevuto come parametro.
      * 
      * @param g il contesto grafico in cui disegnare
      * @param f la forma da disegnare
      * @param selezionata indica se la forma è quella selezionata 
      */
-    private void disegnaForma(Graphics2D g,Forma f,boolean selezionata){
+    private void disegnaForma(Graphics g,Forma f,boolean selezionata){
         int alpha=100; // Opacità della forma bianca da sovrapporre alla forma selezionata
         
         // Disegno, a seconda del suo tipo, la forma colorata
@@ -114,15 +122,5 @@ public class GraphicView extends JPanel implements Observer{
             // Disegno la forma semitrasparente appena creata (chiamata ricorsiva)
             disegnaForma(g,highlight,false);
         }        
-    }
-    
-    /** Metodo chiamato quando il componente deve essere ridisegnato.
-     * Quando viene ridisegnata la GraphicView viene ridisegnato anche il pannello interno.
-     * 
-     * @param g il contesto grafico in cui disegnare
-     */
-    @Override
-    public void paintComponent(Graphics g) {
-        disegna(null);
     }
 }
