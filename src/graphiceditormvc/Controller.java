@@ -724,9 +724,9 @@ public class Controller extends javax.swing.JFrame implements MouseListener, Mou
      *
      * @return il documento aperto o null se non c'è nessun documento aperto
      */
-//    public Model getDocumento() {
-//        return documento;
-//    }
+    public Model getDocumento() {
+        return documento;
+    }
 //
 //    /**
 //     * Restituisce una rappresentazione testuale del documento. Se non c'è
@@ -787,6 +787,13 @@ public class Controller extends javax.swing.JFrame implements MouseListener, Mou
             createRedo(undoList.get(0).descrizione, documento);
             // Sostituisco il documento con quello memorizzato nella lista di Undo
             documento = undoList.get(0).documento;
+            // TODO: per eliminare la dipendenza dal numero di viste attive, forse il Controller dovrebbe avere un array di Observer
+            if(vistaTesto!=null){
+                documento.addObserver(vistaTesto);
+                vistaTesto.update(documento, null);
+            }
+            documento.addObserver(vistaGrafica);
+            vistaGrafica.update(documento, null);
             // Il documento è stato modificato
             saved = false;
 
@@ -871,6 +878,13 @@ public class Controller extends javax.swing.JFrame implements MouseListener, Mou
             createUndo(redoList.get(0).descrizione, documento);
             // Sostituisco il documento con quello memorizzato nella lista dei Redo
             documento = redoList.get(0).documento;
+            // TODO: per eliminare la dipendenza dal numero di viste attive, forse il Controller dovrebbe avere un array di Observer
+            if(vistaTesto!=null){
+                documento.addObserver(vistaTesto);
+                vistaTesto.update(documento, null);
+            }
+            documento.addObserver(vistaGrafica);
+            vistaGrafica.update(documento, null);
             // Il documento è stato modificato
             saved = false;
 

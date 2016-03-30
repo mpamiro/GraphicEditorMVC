@@ -20,7 +20,7 @@ public class GraphicView extends JScrollPane implements Observer{
     /** Il Controller associato alla vista. */
     private Controller controller; 
     /** Il pannello in cui visualizzare la vista grafica del documento. */
-    private ViewPanel pannello; 
+    private JPanel pannello; 
     
     /**
      * Costruttore che crea il pannello scorrevole, aggiungendogli un secondo pannello
@@ -35,7 +35,9 @@ public class GraphicView extends JScrollPane implements Observer{
         // Associo il controller alla vista
         this.controller=controller;
         // Gestione del ViewPort, per visualizzare solo una porzione del documento agendo sulle barre di scorrimento
-        pannello=new ViewPanel(this,dimensioni);
+        pannello=new JPanel();
+        pannello.setPreferredSize(dimensioni);
+        pannello.setBackground(Color.white);
         setViewportView(pannello);
     }
 
@@ -173,24 +175,24 @@ public class GraphicView extends JScrollPane implements Observer{
  * 
  * @author mauropamiro
  */
-class ViewPanel extends JPanel{
-    GraphicView parent;
-    
-    ViewPanel(GraphicView parent, Dimension dimensioni){
-        this.parent=parent;
-        this.setPreferredSize(dimensioni);
-        setBackground(Color.white);
-    }
-    
-    /**
-     * Aggiorna la vista ridisegnando il documento.
-     * Questo metodo viene chiamato automaticamente ogni volta che il componente deve essere ridisegnato.
-     * Chiama il metodo disegna del Controller.
-     * 
-     * @param g il contesto grafico del componente
-     */
-//    @Override
-//    public void paintComponent(Graphics g){
-//        parent.disegna((Graphics2D)g);
-//    }    
-}
+//class ViewPanel extends JPanel{
+//    GraphicView parent;
+//    
+//    ViewPanel(GraphicView parent, Dimension dimensioni){
+//        this.parent=parent;
+//        this.setPreferredSize(dimensioni);
+//        setBackground(Color.white);
+//    }
+//    
+//    /**
+//     * Aggiorna la vista ridisegnando il documento.
+//     * Questo metodo viene chiamato automaticamente ogni volta che il componente deve essere ridisegnato.
+//     * Chiama il metodo disegna del Controller.
+//     * 
+//     * @param g il contesto grafico del componente
+//     */
+////    @Override
+////    public void paintComponent(Graphics g){
+////        parent.update(null,null);
+////    }    
+//}
