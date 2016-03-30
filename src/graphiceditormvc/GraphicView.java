@@ -74,7 +74,7 @@ public class GraphicView extends JScrollPane implements Observer{
     public void update(Observable o, Object arg) {
         Graphics2D g=(Graphics2D)pannello.getGraphics();
         disegna((Model)o,g);
-        pannello.revalidate();
+        pannello.repaint();
     }
 
     public void disegna(Model documento,Graphics2D g){
