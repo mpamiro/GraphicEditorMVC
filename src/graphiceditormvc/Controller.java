@@ -673,6 +673,7 @@ public class Controller extends JFrame implements MouseListener, MouseMotionList
 
     /**
      * Restituisce il documento aperto, null se non c'è nessun documento aperto.
+     * Metodo chiamato da GraphicView per disegnare il documento.
      *
      * @return il documento aperto o null se non c'è nessun documento aperto
      */
