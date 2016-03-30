@@ -16,11 +16,9 @@ import java.util.Observer;
  * 
  * @author mauropamiro
  */
-public class GraphicView extends JScrollPane implements Observer{
+public class GraphicView extends JPanel implements Observer{
     /** Il Controller associato alla vista. */
-    private Controller controller; 
-    /** Il pannello in cui visualizzare la vista grafica del documento. */
-    private ViewPanel pannello; 
+    private final Controller controller; 
     
     /**
      * Costruttore che crea il pannello scorrevole, aggiungendogli un secondo pannello
@@ -30,26 +28,12 @@ public class GraphicView extends JScrollPane implements Observer{
      * @param dimensioni le dimensioni del documento da visualizzare
      */
     public GraphicView(Controller controller, Dimension dimensioni){
-        // creo il pannello con le eventuali barre di scorrimento orizzontali e verticali
-        super(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         // Associo il controller alla vista
         this.controller=controller;
-        // Gestione del ViewPort, per visualizzare solo una porzione del documento agendo sulle barre di scorrimento
-        pannello=new ViewPanel(this,dimensioni);
-        setViewportView(pannello);
+        setPreferredSize(dimensioni);
+        setBackground(Color.white);
     }
 
-    
-    /**
-     * Restituisce le dimensioni del pannello interno.
-     * Il pannello interno non può essere più piccolo del pannello scorrevole 
-     * e non può essere più grande del documento.
-     * 
-     * @return le dimensioni del pannello interno
-     */
-    public Dimension getViewSize(){
-        return pannello.getSize();
-    }
 
 
     /**
@@ -58,8 +42,8 @@ public class GraphicView extends JScrollPane implements Observer{
      * @param ascoltatore un ascoltatore (listener) per gli eventi generati dal mouse
      */
     public void aggiungiAscoltatore(Controller ascoltatore) {
-        pannello.addMouseListener(ascoltatore);
-        pannello.addMouseMotionListener(ascoltatore);
+        addMouseListener(ascoltatore);
+        addMouseMotionListener(ascoltatore);
     }
     
     
@@ -72,18 +56,19 @@ public class GraphicView extends JScrollPane implements Observer{
      */    
     @Override
     public void update(Observable o, Object arg) {
-        Graphics2D g=(Graphics2D)pannello.getGraphics();
-        disegna((Model)o,g);
-        pannello.repaint();
+        //disegna((Model)o);
+        revalidate();
+        repaint();
     }
 
-    public void disegna(Model documento,Graphics2D g){
+    public void disegna(Model documento){
         boolean isSelezionata;
+        Graphics2D g=(Graphics2D)getGraphics();
         if(documento==null) documento=controller.getDocumento();
         // Colora di bianco lo sfondo del documento
         // (in realtà viene colorato solo lo sfondo della porzione di documento visibile)
         g.setColor(Color.white);
-        g.fillRect(0, 0, pannello.getWidth(), pannello.getHeight());
+        g.fillRect(0, 0, getWidth(), getHeight());
         // Disegno una alla volta le forme contenute nel documento
         for(int i=0;i<documento.nForme();i++){
             // Controllo se la forma da disegnare è selezionata
@@ -97,9 +82,9 @@ public class GraphicView extends JScrollPane implements Observer{
         // (se il documento è più piccolo del pannello, intorno al documento c'è un'area grigia)
         g.setColor(Color.GRAY);
         // Disegno una striscia grigia alla destra del documento
-        g.fillRect(documento.getWidth(), 0, pannello.getWidth()-documento.getWidth(), pannello.getHeight());
+        g.fillRect(documento.getWidth(), 0, getWidth()-documento.getWidth(), getHeight());
         // Disegno una striscia grigia sotto il documento
-        g.fillRect(0, documento.getHeight(), pannello.getWidth(), pannello.getHeight()-documento.getHeight());
+        g.fillRect(0, documento.getHeight(), getWidth(), getHeight()-documento.getHeight());
     }
     
     /** Disegno una forma usando il contesto grafico ricevuto come parametro.
@@ -130,19 +115,6 @@ public class GraphicView extends JScrollPane implements Observer{
             disegnaForma(g,highlight,false);
         }        
     }
-        
-
-    /**
-     * Restituisce il contesto grafico del pannello interno.
-     * Il contesto grafico restituito può essere usato dal Controller per disegnare
-     * la vista del documento.
-     * 
-     * @return il contesto grafico del pannello interno
-     */
-    public Graphics2D getViewGraphics() {
-        return (Graphics2D)pannello.getGraphics();
-    }
-    
     
     /** Metodo chiamato quando il componente deve essere ridisegnato.
      * Quando viene ridisegnata la GraphicView viene ridisegnato anche il pannello interno.
@@ -151,39 +123,6 @@ public class GraphicView extends JScrollPane implements Observer{
      */
     @Override
     public void paintComponent(Graphics g) {
-        super.paintComponent(g);
-        pannello.repaint();
+        disegna(null);
     }
-}
-
-
-
-
-
-/**
- * Il pannello interno in cui disegnare la vista del documento.
- * Viene creato e aggiunto alla GraphicView dal costruttore di GraphicView.
- * 
- * @author mauropamiro
- */
-class ViewPanel extends JPanel{
-    GraphicView parent;
-    
-    ViewPanel(GraphicView parent, Dimension dimensioni){
-        this.parent=parent;
-        this.setPreferredSize(dimensioni);
-        setBackground(Color.white);
-    }
-    
-    /**
-     * Aggiorna la vista ridisegnando il documento.
-     * Questo metodo viene chiamato automaticamente ogni volta che il componente deve essere ridisegnato.
-     * Chiama il metodo disegna del Controller.
-     * 
-     * @param g il contesto grafico del componente
-     */
-    @Override
-    public void paintComponent(Graphics g){
-        parent.disegna(null,(Graphics2D)g);
-    }    
 }

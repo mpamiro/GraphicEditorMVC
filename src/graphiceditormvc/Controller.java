@@ -84,7 +84,7 @@ public class Controller extends javax.swing.JFrame implements MouseListener, Mou
     private javax.swing.JPopupMenu.Separator jSeparator5;
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JLabel lbl_status;
-    private javax.swing.JPanel mainPanel;
+    private javax.swing.JScrollPane mainScrollPane;
     private javax.swing.JMenuItem menuClose;
     private javax.swing.JMenuItem menuCopy;
     private javax.swing.JMenuItem menuCut;
@@ -130,7 +130,7 @@ public class Controller extends javax.swing.JFrame implements MouseListener, Mou
         btn_triangle = new javax.swing.JToggleButton();
         jSeparator3 = new javax.swing.JSeparator();
         btnColor = new javax.swing.JButton();
-        mainPanel = new javax.swing.JPanel();
+        mainScrollPane = new javax.swing.JScrollPane();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         menuNew = new javax.swing.JMenuItem();
@@ -248,11 +248,7 @@ public class Controller extends javax.swing.JFrame implements MouseListener, Mou
         jToolBar1.add(jPanel1);
 
         getContentPane().add(jToolBar1, java.awt.BorderLayout.NORTH);
-
-        mainPanel.setBackground(new java.awt.Color(128, 128, 128));
-        mainPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
-        mainPanel.setLayout(new javax.swing.BoxLayout(mainPanel, javax.swing.BoxLayout.LINE_AXIS));
-        getContentPane().add(mainPanel, java.awt.BorderLayout.CENTER);
+        getContentPane().add(mainScrollPane, java.awt.BorderLayout.CENTER);
 
         jMenu1.setText("File");
 
@@ -626,7 +622,7 @@ public class Controller extends javax.swing.JFrame implements MouseListener, Mou
             // Rimuovo il nome del file dalla barra del titolo della finestra
             setTitle("Drawing");
             // Elimino la vista grafica del documento
-            mainPanel.remove(vistaGrafica);
+            mainScrollPane.remove(vistaGrafica);
             vistaGrafica = null;
             // Se aperta, chiudo la finstra con la vista testuale del documento
             if (vistaTesto != null) {
@@ -639,7 +635,7 @@ public class Controller extends javax.swing.JFrame implements MouseListener, Mou
             saved = false;
             selezionata = -1;
             // Ridisegno il pannello della finestra Controller che conteneva la vista grafica
-            mainPanel.repaint();
+            mainScrollPane.repaint();
             // Aggiorno la barra di stato
             setStatus("Chiuso documento");
         }
@@ -664,7 +660,9 @@ public class Controller extends javax.swing.JFrame implements MouseListener, Mou
     private void associaVista() {
         // Creo una nuova vista grafica e la aggiungo al pannello nella finestra del Controller
         vistaGrafica = new GraphicView(this, new Dimension(documento.getWidth(), documento.getHeight()));
-        mainPanel.add(vistaGrafica);
+        //mainScrollPane.add(vistaGrafica);
+        // Gestione del ViewPort, per visualizzare solo una porzione del documento agendo sulle barre di scorrimento
+        mainScrollPane.setViewportView(vistaGrafica);
         documento.addObserver(vistaGrafica);
         // Associo alla vista un gestore di eventi
         vistaGrafica.aggiungiAscoltatore(this);
@@ -1106,6 +1104,7 @@ public class Controller extends javax.swing.JFrame implements MouseListener, Mou
             if (documento.getForma(i).contiene(x, y)) {
                 // memorizzo l'indice della forma selezionata
                 selezionata = i;
+                vistaGrafica.update(documento,null);
                 break;
             }
         }
